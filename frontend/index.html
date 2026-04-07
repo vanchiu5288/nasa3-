@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><!--給手機看的-->
+  <title>系館地下室 AP 地圖</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <h1>系館地下室 AP 地圖</h1>
+        <p>地下室 AP 點位示意圖</p>
+      </div>
+
+      <div class="main">
+        <div class="map-area">
+          <div class="map-box" id="mapBox">
+            <img alt="地下室平面圖" src="images/basement_page.png" />
+          </div>
+        </div>
+
+        <aside class="sidebar">
+          <h2>AP 清單</h2>
+          <div class="ap-list" id="apList"></div>
+        </aside>
+      </div>
+
+      <div class="footer">
+        目前為純 HTML / CSS / JS 版本，適合單張平面圖加固定 AP 點位。
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
