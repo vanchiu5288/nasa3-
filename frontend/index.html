@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" /><!--給手機看的-->
   <title>系館地下室 AP 地圖</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="images/ntucsie.png">
 </head>
 <body>
   <div class="wrap">
@@ -16,9 +18,7 @@
 
       <div class="main">
         <div class="map-area">
-          <div class="map-box" id="mapBox">
-            <img alt="地下室平面圖" src="images/basement_page.png" />
-          </div>
+          <div class="map-box" id="mapBox"></div>
         </div>
 
         <aside class="sidebar">
@@ -32,7 +32,7 @@
       </div>
     </div>
   </div>
-
-  <script src="script.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

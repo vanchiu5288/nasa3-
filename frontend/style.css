@@ -56,13 +56,12 @@ body {
   width: 100%;
   max-width: 980px;
   margin: 0 auto;
+  height: 600px;
+  border-radius: 12px;
 }
 
-.map-box img {
-  width: 100%;
-  display: block;
-  border-radius: 12px;
-  background: white;
+.leaflet-container {
+  background: #0b1220;
 }
 
 .marker {
