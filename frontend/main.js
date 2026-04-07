@@ -1,8 +1,9 @@
 const aps = [
-  { id: "b00", x: 65.2, y: 51.3, note: "靠演講廳右側走道附近" },
-  { id: "b02", x: 74.8, y: 69.3, note: "地下室右上區域" },
-  { id: "b05", x: 30.6, y: 42.9, note: "地下室左下走道旁" },
-  { id: "b15", x: 53.5, y: 69.0, note: "地下室右側中段入口附近" }
+  { id: "b00", x: 65.2, y: 51.3, note: "新館空曠區域" },
+  { id: "b02", x: 74.8, y: 69.3, note: "裏新館閱讀室" },
+  { id: "b05", x: 30.6, y: 42.9, note: "B05研究室外走道" },
+  { id: "b04", x: 62.2, y: 73.7, note: "大三區內" },
+  { id: "b15", x: 53.5, y: 69.0, note: "舊館空曠區域" }
 ];
 
 const apList = document.getElementById("apList");
@@ -29,7 +30,6 @@ function setActive(id) {
     el.classList.toggle("active", el.dataset.id === id);
   });
 }
-
 
 aps.forEach((ap) => {
   const pxX = (ap.x / 100) * w;
