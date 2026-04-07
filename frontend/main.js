@@ -1,12 +1,25 @@
 const aps = [
-  { id: "b00", x: 54.0, y: 37.0, note: "靠演講廳右側走道附近" },
-  { id: "b02", x: 77.5, y: 28.5, note: "地下室右上區域" },
-  { id: "b05", x: 33.5, y: 66.0, note: "地下室左下走道旁" },
-  { id: "b151", x: 69.0, y: 57.5, note: "地下室右側中段入口附近" }
+  { id: "b00", x: 65.2, y: 51.3, note: "新館空曠區域" },
+  { id: "b02", x: 74.8, y: 69.3, note: "裏新館閱讀室" },
+  { id: "b05", x: 30.6, y: 42.9, note: "B05研究室外走道" },
+  { id: "b04", x: 62.2, y: 73.7, note: "大三區內" },
+  { id: "b15", x: 53.5, y: 69.0, note: "舊館空曠區域" }
 ];
 
-const mapBox = document.getElementById("mapBox");
 const apList = document.getElementById("apList");
+const map = L.map('mapBox', {
+    crs: L.CRS.Simple,
+    minZoom: -2,
+    maxZoom: 2,
+    zoomControl: true
+});
+
+const w = 1684; 
+const h = 1191;
+const bounds = [[0, 0], [h, w]];
+
+L.imageOverlay('images/basement_page.png', bounds).addTo(map);
+map.fitBounds(bounds);
 
 function setActive(id) {
   document.querySelectorAll(".marker").forEach((el) => {
@@ -19,22 +32,22 @@ function setActive(id) {
 }
 
 aps.forEach((ap) => {
-  const marker = document.createElement("div");
-  marker.className = "marker";
-  marker.dataset.id = ap.id;
-  marker.style.left = ap.x + "%";
-  marker.style.top = ap.y + "%";
-  marker.title = ap.id + "｜" + ap.note;
-  marker.addEventListener("click", () => setActive(ap.id));
-  mapBox.appendChild(marker);
+  const pxX = (ap.x / 100) * w;
+  const pxY = h - ((ap.y / 100) * h);
+  const iconHtml = `
+    <div class="marker" data-id="${ap.id}" title="${ap.id}｜${ap.note}"></div>
+    <div class="label">${ap.id}</div>
+  `;
 
-  const label = document.createElement("div");
-  label.className = "label";
-  label.style.left = ap.x + "%";
-  label.style.top = ap.y + "%";
-  label.textContent = ap.id;
-  mapBox.appendChild(label);
-
+  const customIcon = L.divIcon({
+      className: 'custom-ap-icon', // 外層容器的 class，預設為透明無樣式
+      html: iconHtml,
+      iconSize: [0, 0] // 設為 0x0，讓裡面的 .marker 自己用 CSS 置中
+  });
+  const marker = L.marker([pxY, pxX], { icon: customIcon }).addTo(map);
+  marker.on('click', () => {
+      setActive(ap.id);
+  });
   const item = document.createElement("div");
   item.className = "ap-item";
   item.dataset.id = ap.id;
@@ -44,8 +57,8 @@ aps.forEach((ap) => {
   `;
   item.addEventListener("click", () => {
     setActive(ap.id);
+    map.flyTo([pxY, pxX], 1, { duration: 0.5 });
   });
-
   apList.appendChild(item);
 });
 
