@@ -14,7 +14,7 @@ nvm install node
 npm create vite@latest frontend(選react跟javascript(不用選有react compiler的，那個是優化用的，之後想要也可以安裝))
 cd frontend
 npm install 
-npm run div(讓server啟動，這樣才能檢視網頁)
+npm run dev(讓server啟動，這樣才能檢視網頁)
 我的網站路徑:
 http://localhost:5173/
 6.安裝leaflet
