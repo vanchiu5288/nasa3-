@@ -29,7 +29,7 @@ const aps = [
   },
   {
     id: "b05", x: 30.6, y: 42.9,
-    note: "B05研究室外走道",
+    note: "研究室外走道",
     csie_bssid: "30-87-D9-31-7F-C9",
     csie_rssi: -35,
     csie_Rx_rate: 19.4,
@@ -41,7 +41,7 @@ const aps = [
   },
   {
     id: "b04", x: 62.2, y: 73.7,
-    note: "大三區內",
+    note: "研究生休息區",
     csie_bssid: "34-8F-27-1E-7A-89",
     csie_rssi: -34,
     csie_Rx_rate: 47.5,
@@ -50,6 +50,18 @@ const aps = [
     rssi: -35,
     Rx_rate: 241.1,
     Tx_rate: 212.5
+  },
+  {
+    id: "b09", x: 38, y: 63.0,
+    note: "大三區內",
+    csie_bssid: "30-87-D9-31-96-E9",
+    csie_rssi: -34,
+    csie_Rx_rate: 41.7,
+    csie_Tx_rate: 24.3,
+    bssid: "30-87-D9-71-96-EC",
+    rssi: -57,
+    Rx_rate: 150.3,
+    Tx_rate: 176.4
   },
   {
     id: "b15", x: 53.5, y: 69.0,
@@ -173,7 +185,7 @@ function Sidebar({ aps, selectedId, onSelect }) {
 }
 
 export default function App() {
-  const [selectedId, setSelectedId] = useState("b00");
+  const [selectedId, setSelectedId] = useState(null);
 
   const selectedAp = useMemo(
     () => aps.find((ap) => ap.id === selectedId) ?? null,
