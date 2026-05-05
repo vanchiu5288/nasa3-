@@ -80,7 +80,7 @@ const basementAps = [
   }
 ];
 
-const firstFloorAps = [
+const floor1Aps = [
   {
     id: "R101",
     x: 41.6, y: 62.8,
@@ -206,25 +206,89 @@ const firstFloorAps = [
   }
 ];
 
+const floor2Aps = [];
+const floor3Aps = [];
+const floor4Aps = [];
+const floor5Aps = [];
+const floor6Aps = [];
+
 const floors = {
   basement: {
     id: "basement",
+    label: "地下室",
     title: "系館地下室 AP 地圖",
     subtitle: "地下室 AP 點位示意圖",
     imageUrl: "/images/basement_page.png",
     width: 1684,
     height: 1191,
-    aps: basementAps
+    aps: basementAps,
   },
+
   floor1: {
     id: "floor1",
+    label: "一樓",
     title: "系館一樓 AP 地圖",
     subtitle: "一樓 AP 點位示意圖",
     imageUrl: "/images/floor1_page.png",
-    width: 2048,
-    height: 1448,
-    aps: firstFloorAps
-  }
+    width: 1684,
+    height: 1191,
+    aps: floor1Aps,
+  },
+
+  floor2: {
+    id: "floor2",
+    label: "二樓",
+    title: "系館二樓 AP 地圖",
+    subtitle: "二樓 AP 點位示意圖",
+    imageUrl: "/images/floor2_page.png",
+    width: 1684,
+    height: 1191,
+    aps: floor2Aps,
+  },
+
+  floor3: {
+    id: "floor3",
+    label: "三樓",
+    title: "系館三樓 AP 地圖",
+    subtitle: "三樓 AP 點位示意圖",
+    imageUrl: "/images/floor3_page.png",
+    width: 1684,
+    height: 1191,
+    aps: floor3Aps,
+  },
+
+  floor4: {
+    id: "floor4",
+    label: "四樓",
+    title: "系館四樓 AP 地圖",
+    subtitle: "四樓 AP 點位示意圖",
+    imageUrl: "/images/floor4_page.png",
+    width: 1684,
+    height: 1191,
+    aps: floor4Aps,
+  },
+
+  floor5: {
+    id: "floor5",
+    label: "五樓",
+    title: "系館五樓 AP 地圖",
+    subtitle: "五樓 AP 點位示意圖",
+    imageUrl: "/images/floor5_page.png",
+    width: 1684,
+    height: 1191,
+    aps: floor5Aps,
+  },
+
+  floor6: {
+    id: "floor6",
+    label: "六樓",
+    title: "系館六樓 AP 地圖",
+    subtitle: "六樓 AP 點位示意圖",
+    imageUrl: "/images/floor6_page.png",
+    width: 1684,
+    height: 1191,
+    aps: floor6Aps,
+  },
 };
 
 function getSignalColor(rssi) {
@@ -362,76 +426,82 @@ function Sidebar({ aps, selectedId, onSidebarSelect, floorLabel }) {
       <h2>{floorLabel} AP 清單</h2>
 
       <div className="ap-list">
-        {aps.map((ap) => {
-          const hasMetrics = typeof ap.rssi === "number" || typeof ap.csie_rssi === "number";
+        {aps.length === 0 ? (
+          <div className="ap-empty-floor">
+            這個樓層目前還沒有 AP 點位資料
+          </div>
+        ) : (
+          aps.map((ap) => {
+            const hasMetrics = typeof ap.rssi === "number" || typeof ap.csie_rssi === "number";
 
-          return (
-            <div
-              key={ap.id}
-              className={`ap-item ${selectedId === ap.id ? "active" : ""}`}
-              onClick={() => onSidebarSelect(ap.id)}
-            >
+            return (
               <div
-                className="ap-name"
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}
+                key={ap.id}
+                className={`ap-item ${selectedId === ap.id ? "active" : ""}`}
+                onClick={() => onSidebarSelect(ap.id)}
               >
-                <span>{ap.id}</span>
-                <span style={{ fontSize: "12px", fontWeight: "normal", color: "#94a3b8" }}>
-                  {ap.note || ""}
-                </span>
-              </div>
-
-              {hasMetrics ? (
                 <div
-                  className="ap-stats"
-                  style={{
-                    marginTop: "8px",
-                    paddingTop: "8px",
-                    borderTop: "1px dashed rgba(255,255,255,0.15)",
-                    fontSize: "13px",
-                    lineHeight: 1.6
-                  }}
+                  className="ap-name"
+                  style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}
                 >
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "45px 60px 1fr",
-                      alignItems: "center",
-                      gap: "8px"
-                    }}
-                  >
-                    <span style={{ color: "#dea34a", fontWeight: "bold", width: "40px" }}>csie</span>
-                    <span style={{ color: getSignalColor(ap.csie_rssi), width: "70px" }}>
-                      📶 {ap.csie_rssi}
-                    </span>
-                    <span style={{ color: "#cbd5e1", fontSize: "12px" }}>
-                      Rx: {ap.csie_Rx_rate} / Tx: {ap.csie_Tx_rate}
-                    </span>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "45px 60px 1fr",
-                      alignItems: "center",
-                      gap: "8px"
-                    }}
-                  >
-                    <span style={{ color: "#65a7f1", fontWeight: "bold", width: "40px" }}>5G</span>
-                    <span style={{ color: getSignalColor(ap.rssi), width: "70px" }}>
-                      📶 {ap.rssi}
-                    </span>
-                    <span style={{ color: "#cbd5e1", fontSize: "12px" }}>
-                      Rx: {ap.Rx_rate} / Tx: {ap.Tx_rate}
-                    </span>
-                  </div>
+                  <span>{ap.id}</span>
+                  <span style={{ fontSize: "12px", fontWeight: "normal", color: "#94a3b8" }}>
+                    {ap.note || ""}
+                  </span>
                 </div>
-              ) : (
-                <div className="ap-empty">數值暫時留白</div>
-              )}
-            </div>
-          );
-        })}
+
+                {hasMetrics ? (
+                  <div
+                    className="ap-stats"
+                    style={{
+                      marginTop: "8px",
+                      paddingTop: "8px",
+                      borderTop: "1px dashed rgba(255,255,255,0.15)",
+                      fontSize: "13px",
+                      lineHeight: 1.6
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "45px 60px 1fr",
+                        alignItems: "center",
+                        gap: "8px"
+                      }}
+                    >
+                      <span style={{ color: "#dea34a", fontWeight: "bold", width: "40px" }}>csie</span>
+                      <span style={{ color: getSignalColor(ap.csie_rssi), width: "70px" }}>
+                        📶 {ap.csie_rssi}
+                      </span>
+                      <span style={{ color: "#cbd5e1", fontSize: "12px" }}>
+                        Rx: {ap.csie_Rx_rate} / Tx: {ap.csie_Tx_rate}
+                      </span>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "45px 60px 1fr",
+                        alignItems: "center",
+                        gap: "8px"
+                      }}
+                    >
+                      <span style={{ color: "#65a7f1", fontWeight: "bold", width: "40px" }}>5G</span>
+                      <span style={{ color: getSignalColor(ap.rssi), width: "70px" }}>
+                        📶 {ap.rssi}
+                      </span>
+                      <span style={{ color: "#cbd5e1", fontSize: "12px" }}>
+                        Rx: {ap.Rx_rate} / Tx: {ap.Tx_rate}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="ap-empty">數值暫時留白</div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
     </aside>
   );
@@ -611,21 +681,16 @@ export default function App() {
             </div>
 
             <div className="floor-switch">
-              <button
-                className={activeFloor === "basement" ? "active" : ""}
-                onClick={() => handleSwitchFloor("basement")}
-                type="button"
+              <select
+                value={activeFloor}
+                onChange={(e) => handleSwitchFloor(e.target.value)}
               >
-                地下室
-              </button>
-
-              <button
-                className={activeFloor === "floor1" ? "active" : ""}
-                onClick={() => handleSwitchFloor("floor1")}
-                type="button"
-              >
-                一樓
-              </button>
+                {Object.values(floors).map((floorOption) => (
+                  <option key={floorOption.id} value={floorOption.id}>
+                    {floorOption.label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="heatmap-switch">
               <button
@@ -650,13 +715,15 @@ export default function App() {
         <div className="main">
           <div className="map-area">
             <div className="map-box">
+              <div className="floor-badge">{floor.label}</div>
+
               <MapContainer
                 key={floor.id}
                 crs={L.CRS.Simple}
                 bounds={bounds}
                 minZoom={-2}
                 maxZoom={2}
-                zoomControl={true}
+                zoomControl={false}
                 style={{ width: "100%", height: "100%" }}
                 whenCreated={setMapInstance}
               >
@@ -711,14 +778,14 @@ export default function App() {
             aps={floor.aps}
             selectedId={selectedId}
             onSidebarSelect={handleSidebarSelect}
-            floorLabel={activeFloor === "basement" ? "地下室" : "一樓"}
+            floorLabel={floor.label}
           />
         </div>
 
         <div className="footer">
-          目前支援地下室與一樓平面圖切換；熱力圖資料由 Django API 提供。
+          目前支援系館平面圖切換；熱力圖資料由 Django API 提供。
           <br />
-          Last Updated: 2026.04.21
+          Last Updated: 2026.05.05
         </div>
       </div>
     </div>
