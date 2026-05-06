@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'heatmap',
-    'corsheaders'
+    'corsheaders',
+    'iperf_api',
 ]
 
 MIDDLEWARE = [

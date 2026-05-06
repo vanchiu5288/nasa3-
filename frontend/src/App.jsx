@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import React from 'react';
 import { MapContainer, ImageOverlay, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet.heat";
+import SpeedTestButton from './components/SpeedTestButton';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
 
 const basementAps = [
   {
@@ -290,7 +293,6 @@ const floors = {
     aps: floor6Aps,
   },
 };
-
 function getSignalColor(rssi) {
   if (typeof rssi !== "number") return "#cbd5e1";
   if (rssi >= -50) return "#4ade80";
@@ -402,7 +404,7 @@ function HeatmapLayer({ points, width, height }) {
   return null;
 }
 
-function CoordinateLogger({ width, height, activeFloor }) {
+function MapClickHandler({ width, height, activeFloor, onLocationSelect }) {
   useMapEvents({
     click(e) {
       const pxY = e.latlng.lat;
@@ -411,14 +413,41 @@ function CoordinateLogger({ width, height, activeFloor }) {
       const x = (pxX / width) * 100;
       const y = ((height - pxY) / height) * 100;
 
-      console.log(
-        `[${activeFloor}] x: ${x.toFixed(1)}, y: ${y.toFixed(1)}`
-      );
+      onLocationSelect({
+          lat: e.latlng.lat,
+          lng: e.latlng.lng,
+          x: x,
+          y: y,
+          floor: activeFloor
+      });
     },
   });
 
   return null;
 }
+
+function AutoOpenMarker({ location, onTestComplete }) {
+  const markerRef = useRef(null);
+
+  // 當元件渲染或位置改變時，呼叫 Leaflet 原生的 openPopup()
+  useEffect(() => {
+    if (markerRef.current) {
+      markerRef.current.openPopup();
+    }
+  }, [location]);
+
+  return (
+    <Marker position={[location.lat, location.lng]} ref={markerRef}>
+      <Popup>
+        <div style={{ textAlign: 'center' }}>
+          <p>📍 X: {Math.round(location.x)}, Y: {Math.round(location.y)}</p>
+          <SpeedTestButton onTestComplete={onTestComplete} />
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
 
 function Sidebar({ aps, selectedId, onSidebarSelect, floorLabel }) {
   return (
@@ -600,8 +629,11 @@ function ApPopup({ ap }) {
   );
 }
 
+/*
 export default function App() {
   const [activeFloor, setActiveFloor] = useState("basement");
+  const width = 1684;
+  const height = 1194;
   const [selectedId, setSelectedId] = useState(null);
   const [flyToId, setFlyToId] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
@@ -614,6 +646,63 @@ export default function App() {
 
   const floor = floors[activeFloor];
   const bounds = [[0, 0], [floor.height, floor.width]];
+
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const handleSpeedTestDone = (speedMbps) => {
+    if (selectedLocation) {
+      console.log(
+        `[${selectedLocation.floor}] x: ${selectedLocation.x}, y: ${selectedLocation.y} | 速度: ${speedMbps} Mbps`
+      );
+      
+    }
+  };
+
+  return (
+    <div className="app-container" style={{ display: 'flex' }}>
+
+      <MapContainer
+        key={floor.id}
+        crs={L.CRS.Simple}
+        bounds={bounds}
+        minZoom={-2}
+        maxZoom={2}
+        zoomControl={true}
+        style={{ width: "100%", height: "100%" }}
+        whenCreated={setMapInstance}
+      >
+        <ImageOverlay url={floor.imageUrl} bounds={bounds} />
+
+        <MapClickHandler
+          width={floor.width}
+          height={floor.height}
+          activeFloor={activeFloor}
+        />
+
+        {selectedLocation && (
+          <Marker position={[selectedLocation.lat, selectedLocation.lng]}>
+            <Popup>
+              <div style={{ textAlign: 'center' }}>
+                <p>📍 X: {selectedLocation.x}, Y: {selectedLocation.y}</p>
+                <SpeedTestButton onTestComplete={handleSpeedTestDone} />
+              </div>
+            </Popup>
+          </Marker>
+        )}
+
+        {selectedLocation && (
+          <Marker position={[selectedLocation.lat, selectedLocation.lng]}>
+            <Popup>
+              <div style={{ textAlign: 'center' }}>
+                <p>📍 X: {selectedLocation.x}, Y: {selectedLocation.y}</p>
+                
+                <SpeedTestButton onTestComplete={handleSpeedTestDone} />
+              </div>
+            </Popup>
+          </Marker>
+        )}
+      </MapContainer>
+    </div>
+  );
 
   useEffect(() => {
     async function fetchHeatmap() {
@@ -786,6 +875,220 @@ export default function App() {
           目前支援系館平面圖切換；熱力圖資料由 Django API 提供。
           <br />
           Last Updated: 2026.05.05
+        </div>
+      </div>
+    </div>
+  );
+}*/
+
+export default function App() {
+  const [activeFloor, setActiveFloor] = useState("basement");
+
+  const width = 1684;
+  const height = 1194;
+  const [selectedId, setSelectedId] = useState(null);
+  const [flyToId, setFlyToId] = useState(null);
+  const [mapInstance, setMapInstance] = useState(null);
+
+  const [heatmapSsid, setHeatmapSsid] = useState("csie-5G");
+
+  const [heatPoints, setHeatPoints] = useState([]);
+  const [heatmapLoading, setHeatmapLoading] = useState(false);
+  const [heatmapError, setHeatmapError] = useState(null);
+
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
+  const floor = floors[activeFloor];
+  const bounds = [[0, 0], [floor.height, floor.width]];
+
+  const  handleSpeedTestDone = (speedMbps) => {
+    if (selectedLocation) {
+      console.log(
+        `[${selectedLocation.floor}] x: ${selectedLocation.x}, y: ${selectedLocation.y} | 速度: ${speedMbps} Mbps`
+      );
+    }
+  };
+
+  useEffect(() => {
+    async function fetchHeatmap() {
+      try {
+        setHeatmapLoading(true);
+        setHeatmapError(null);
+
+        const params = new URLSearchParams({
+          floor: activeFloor,
+          ssid: heatmapSsid,
+        });
+
+        const res = await fetch(`${API_BASE_URL}/api/heatmap/?${params.toString()}`);
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const json = await res.json();
+        setHeatPoints(json.data || []);
+      } catch (err) {
+        console.error("Failed to fetch heatmap:", err);
+        setHeatmapError("無法載入熱力圖資料");
+        setHeatPoints([]);
+      } finally {
+        setHeatmapLoading(false);
+      }
+    }
+
+    fetchHeatmap();
+  }, [activeFloor, heatmapSsid]);
+
+  const flyToAp = useMemo(
+    () => floor.aps.find((ap) => ap.id === flyToId) ?? null,
+    [floor, flyToId]
+  );
+
+  function handleSidebarSelect(apId) {
+    if (mapInstance) {
+      mapInstance.closePopup();
+    }
+    setSelectedId(apId);
+    setFlyToId(apId);
+  }
+
+  function handleSwitchFloor(nextFloor) {
+    if (mapInstance) {
+      mapInstance.closePopup();
+    }
+    setActiveFloor(nextFloor);
+    setSelectedId(null);
+    setFlyToId(null);
+  }
+
+  return (
+    <div className="wrap">
+      <div className="panel">
+        <div className="header">
+          <div className="header-top">
+            <div>
+              <h1>{floor.title}</h1>
+              <p>{floor.subtitle}</p>
+            </div>
+
+            <div className="floor-switch">
+              <button
+                className={activeFloor === "basement" ? "active" : ""}
+                onClick={() => handleSwitchFloor("basement")}
+                type="button"
+              >
+                地下室
+              </button>
+
+              <button
+                className={activeFloor === "floor1" ? "active" : ""}
+                onClick={() => handleSwitchFloor("floor1")}
+                type="button"
+              >
+                一樓
+              </button>
+            </div>
+            <div className="heatmap-switch">
+              <button
+                className={heatmapSsid === "csie" ? "active" : ""}
+                onClick={() => setHeatmapSsid("csie")}
+                type="button"
+              >
+                csie 熱力圖
+              </button>
+
+              <button
+                className={heatmapSsid === "csie-5G" ? "active" : ""}
+                onClick={() => setHeatmapSsid("csie-5G")}
+                type="button"
+              >
+                csie-5G 熱力圖
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="main">
+          <div className="map-area">
+            <div className="map-box">
+              <MapContainer
+                key={floor.id}
+                crs={L.CRS.Simple}
+                bounds={bounds}
+                minZoom={-2}
+                maxZoom={2}
+                zoomControl={true}
+                style={{ width: "100%", height: "100%" }}
+                whenCreated={setMapInstance}
+              >
+                <ImageOverlay url={floor.imageUrl} bounds={bounds} />
+
+                <MapClickHandler
+                  width={floor.width}
+                  height={floor.height}
+                  activeFloor={activeFloor}
+                  onLocationSelect={setSelectedLocation}
+                />
+
+                {selectedLocation && (
+                  <AutoOpenMarker 
+                    location={selectedLocation} 
+                    onTestComplete={handleSpeedTestDone} 
+                  />
+                )}
+
+                <HeatmapLayer
+                  points={heatPoints}
+                  width={floor.width}
+                  height={floor.height}
+                />
+
+                <FlyToSelected targetAp={flyToAp} width={floor.width} height={floor.height} />
+
+                {floor.aps.map((ap) => {
+                  const pxX = (ap.x / 100) * floor.width;
+                  const pxY = floor.height - ((ap.y / 100) * floor.height);
+
+                  return (
+                    <Marker
+                      key={ap.id}
+                      position={[pxY, pxX]}
+                      icon={createApIcon(ap, selectedId === ap.id)}
+                      eventHandlers={{
+                        click: () => setSelectedId(ap.id)
+                      }}
+                    >
+                      <Popup>
+                        <ApPopup ap={ap} />
+                      </Popup>
+                    </Marker>
+                  );
+                })}
+              </MapContainer>
+
+              {heatmapLoading && (
+                <div className="map-status">熱力圖載入中...</div>
+              )}
+
+              {heatmapError && (
+                <div className="map-status error">{heatmapError}</div>
+              )}
+            </div>
+          </div>
+
+          <Sidebar
+            aps={floor.aps}
+            selectedId={selectedId}
+            onSidebarSelect={handleSidebarSelect}
+            floorLabel={activeFloor === "basement" ? "地下室" : "一樓"}
+          />
+        </div>
+
+        <div className="footer">
+          目前支援地下室與一樓平面圖切換；熱力圖資料由 Django API 提供。
+          <br />
+          Last Updated: 2026.04.21
         </div>
       </div>
     </div>
