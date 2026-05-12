@@ -209,11 +209,341 @@ const floor1Aps = [
   }
 ];
 
-const floor2Aps = [];
-const floor3Aps = [];
-const floor4Aps = [];
-const floor5Aps = [];
-const floor6Aps = [];
+const floor2Aps = [
+  { id: "R201",
+    x: 55.2,
+    y: 67.7,
+    note: ""
+  },
+  { id: "R202",
+    x: 68.17,
+    y: 74,
+    note: ""
+  },
+  { id: "R201",
+    x: 55.2,
+    y: 67.7,
+    note: ""
+  },
+  { id: "R204",
+    x: 68.13,
+    y: 55,
+    note: ""
+  },
+  { id: "R208",
+    x: 63.9,
+    y: 36,
+    note: ""
+  },
+  { id: "R210",
+    x: 78.2,
+    y: 32.7,
+    note: ""
+  },
+  { id: "R205",
+    x: 45,
+    y: 72,
+    note: ""
+  },
+  { id: "R209",
+    x: 24.2,
+    y: 76.9,
+    note: ""
+  },
+  { id: "R214",
+    x: 62.1,
+    y: 26.75,
+    note: ""
+  },
+  { id: "R218",
+    x: 48.5,
+    y: 26.8,
+    note: ""
+  },
+  { id: "R217",
+    x: 29,
+    y: 55,
+    note: ""
+  },
+  { id: "R219",
+    x: 29.3,
+    y: 41.35,
+    note: ""
+  },
+  { id: "R218",
+    x: 17.3,
+    y: 23.8,
+    note: ""
+  }
+];
+const floor3Aps = [
+  { id: "R303",
+    x: 45.3,
+    y: 56.4,
+    note: ""
+  },
+  { id: "R305",
+    x: 33.2,
+    y: 56,
+    note: ""
+  },
+  { id: "R306",
+    x: 72.5,
+    y: 56,
+    note: ""
+  },
+  { id: "R309",
+    x: 21,
+    y: 78,
+    note: ""
+  },
+  { id: "R310",
+    x: 81,
+    y: 80,
+    note: ""
+  },
+  { id: "R317",
+    x: 21.1,
+    y: 64.7,
+    note: ""
+  },
+  { id: "R318",
+    x: 80.8,
+    y: 64.6,
+    note: ""
+  },
+  { id: "R321",
+    x: 21.2,
+    y: 50,
+    note: ""
+  },
+  { id: "R324",
+    x: 81,
+    y: 48,
+    note: ""
+  },
+  { id: "R327",
+    x: 21.3,
+    y: 30.4,
+    note: ""
+  },
+  { id: "R331",
+    x: 21.3,
+    y: 16,
+    note: ""
+  },
+  { id: "R332",
+    x: 81,
+    y: 14.2,
+    note: ""
+  },
+  { id: "R321",
+    x: 21.2,
+    y: 50,
+    note: ""
+  },
+  { id: "R338",
+    x: 67.8,
+    y: 25.2,
+    note: ""
+  },
+  { id: "R342",
+    x: 58,
+    y: 25.3,
+    note: ""
+  },
+  { id: "R344",
+    x: 46.7,
+    y: 25.5,
+    note: ""
+  }
+];
+const floor4Aps = [
+  { id: "R401",
+    x: 44.2,
+    y: 56.2,
+    note: ""
+  },
+  { id: "R402",
+    x: 65.7,
+    y: 58,
+    note: ""
+  },
+  { id: "R405",
+    x: 29.75,
+    y: 55,
+    note: ""
+  },
+  { id: "R409",
+    x: 19.2,
+    y: 78.4,
+    note: ""
+  },
+  { id: "R410",
+    x: 78.1,
+    y: 77,
+    note: ""
+  },
+  { id: "R417",
+    x: 19,
+    y: 60,
+    note: ""
+  },
+  { id: "R418",
+    x: 78.3,
+    y: 61.2,
+    note: ""
+  },
+  { id: "R423",
+    x: 17.3,
+    y: 43.6,
+    note: ""
+  },
+  { id: "R424",
+    x: 78.2,
+    y: 43.7,
+    note: ""
+  },
+  { id: "R428",
+    x: 77.9,
+    y: 30.5,
+    note: ""
+  },
+  { id: "R432",
+    x: 77.9,
+    y: 13.8,
+    note: ""
+  },
+  { id: "R433",
+    x: 19.2,
+    y: 16,
+    note: ""
+  },
+  { id: "R438",
+    x: 70.3,
+    y: 24.7,
+    note: ""
+  },
+  { id: "R439",
+    x: 21.8,
+    y: 29.6,
+    note: ""
+  },
+  { id: "R442",
+    x: 55.2,
+    y: 24.6,
+    note: ""
+  },
+  { id: "R444",
+    x: 45.4,
+    y: 24.3,
+    note: ""
+  }
+];
+const floor5Aps = [
+  { id: "R501",
+    x: 45,
+    y: 57,
+    note: ""
+  },
+  { id: "R502",
+    x: 67.6,
+    y: 59,
+    note: ""
+  },
+  { id: "R505",
+    x: 33.9,
+    y: 55.8,
+    note: ""
+  },
+  { id: "R509",
+    x: 19.2,
+    y: 79,
+    note: ""
+  },
+  { id: "R510",
+    x: 80.2,
+    y: 80,
+    note: ""
+  },
+  { id: "R517",
+    x: 19,
+    y: 62,
+    note: ""
+  },
+  { id: "R518",
+    x: 80,
+    y: 63,
+    note: ""
+  },
+  { id: "R523",
+    x: 17,
+    y: 43,
+    note: ""
+  },
+  { id: "R524",
+    x: 80.2,
+    y: 48.7,
+    note: ""
+  },
+  { id: "R528",
+    x: 80,
+    y: 32,
+    note: ""
+  },
+  { id: "R531",
+    x: 19.4,
+    y: 14,
+    note: ""
+  },
+  { id: "R532",
+    x: 80.1,
+    y: 13.4,
+    note: ""
+  },
+  { id: "R538",
+    x: 67.2,
+    y: 23.8,
+    note: ""
+  },
+  { id: "R539",
+    x: 22.2,
+    y: 28.6,
+    note: ""
+  },
+  { id: "R542",
+    x: 56.15,
+    y: 24,
+    note: ""
+  },
+  { id: "R544",
+    x: 46.2,
+    y: 24,
+    note: ""
+  },
+];
+const floor6Aps = [
+  { id: "R600",
+    x: 8,
+    y: 69,
+    note: ""
+  },
+  { id: "R601",
+    x: 21,
+    y: 42.3,
+    note: ""
+  },
+  { id: "R603",
+    x: 35.6,
+    y: 74,
+    note: ""
+  },
+  { id: "R605",
+    x: 52,
+    y: 74,
+    note: ""
+  },
+];
 
 const floors = {
   basement: {
@@ -426,10 +756,9 @@ function MapClickHandler({ width, height, activeFloor, onLocationSelect }) {
   return null;
 }
 
-function AutoOpenMarker({ location, onTestComplete }) {
+function AutoOpenMarker({ location, onTestComplete, onClose }) {
   const markerRef = useRef(null);
 
-  // 當元件渲染或位置改變時，呼叫 Leaflet 原生的 openPopup()
   useEffect(() => {
     if (markerRef.current) {
       markerRef.current.openPopup();
@@ -437,9 +766,15 @@ function AutoOpenMarker({ location, onTestComplete }) {
   }, [location]);
 
   return (
-    <Marker position={[location.lat, location.lng]} ref={markerRef}>
+    <Marker
+      position={[location.lat, location.lng]}
+      ref={markerRef}
+      eventHandlers={{
+        popupclose: onClose,
+      }}
+    >
       <Popup>
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: "center" }}>
           <p>📍 X: {Math.round(location.x)}, Y: {Math.round(location.y)}</p>
           <SpeedTestButton onTestComplete={onTestComplete} />
         </div>
@@ -629,258 +964,6 @@ function ApPopup({ ap }) {
   );
 }
 
-/*
-export default function App() {
-  const [activeFloor, setActiveFloor] = useState("basement");
-  const width = 1684;
-  const height = 1194;
-  const [selectedId, setSelectedId] = useState(null);
-  const [flyToId, setFlyToId] = useState(null);
-  const [mapInstance, setMapInstance] = useState(null);
-
-  const [heatmapSsid, setHeatmapSsid] = useState("csie-5G");
-
-  const [heatPoints, setHeatPoints] = useState([]);
-  const [heatmapLoading, setHeatmapLoading] = useState(false);
-  const [heatmapError, setHeatmapError] = useState(null);
-
-  const floor = floors[activeFloor];
-  const bounds = [[0, 0], [floor.height, floor.width]];
-
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const handleSpeedTestDone = (speedMbps) => {
-    if (selectedLocation) {
-      console.log(
-        `[${selectedLocation.floor}] x: ${selectedLocation.x}, y: ${selectedLocation.y} | 速度: ${speedMbps} Mbps`
-      );
-      
-    }
-  };
-
-  return (
-    <div className="app-container" style={{ display: 'flex' }}>
-
-      <MapContainer
-        key={floor.id}
-        crs={L.CRS.Simple}
-        bounds={bounds}
-        minZoom={-2}
-        maxZoom={2}
-        zoomControl={true}
-        style={{ width: "100%", height: "100%" }}
-        whenCreated={setMapInstance}
-      >
-        <ImageOverlay url={floor.imageUrl} bounds={bounds} />
-
-        <MapClickHandler
-          width={floor.width}
-          height={floor.height}
-          activeFloor={activeFloor}
-        />
-
-        {selectedLocation && (
-          <Marker position={[selectedLocation.lat, selectedLocation.lng]}>
-            <Popup>
-              <div style={{ textAlign: 'center' }}>
-                <p>📍 X: {selectedLocation.x}, Y: {selectedLocation.y}</p>
-                <SpeedTestButton onTestComplete={handleSpeedTestDone} />
-              </div>
-            </Popup>
-          </Marker>
-        )}
-
-        {selectedLocation && (
-          <Marker position={[selectedLocation.lat, selectedLocation.lng]}>
-            <Popup>
-              <div style={{ textAlign: 'center' }}>
-                <p>📍 X: {selectedLocation.x}, Y: {selectedLocation.y}</p>
-                
-                <SpeedTestButton onTestComplete={handleSpeedTestDone} />
-              </div>
-            </Popup>
-          </Marker>
-        )}
-      </MapContainer>
-    </div>
-  );
-
-  useEffect(() => {
-    async function fetchHeatmap() {
-      try {
-        setHeatmapLoading(true);
-        setHeatmapError(null);
-
-        const params = new URLSearchParams({
-          floor: activeFloor,
-          ssid: heatmapSsid,
-        });
-
-        const res = await fetch(`${API_BASE_URL}/api/heatmap/?${params.toString()}`);
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-
-        const json = await res.json();
-        setHeatPoints(json.data || []);
-      } catch (err) {
-        console.error("Failed to fetch heatmap:", err);
-        setHeatmapError("無法載入熱力圖資料");
-        setHeatPoints([]);
-      } finally {
-        setHeatmapLoading(false);
-      }
-    }
-
-    fetchHeatmap();
-  }, [activeFloor, heatmapSsid]);
-
-  const flyToAp = useMemo(
-    () => floor.aps.find((ap) => ap.id === flyToId) ?? null,
-    [floor, flyToId]
-  );
-
-  function handleSidebarSelect(apId) {
-    if (mapInstance) {
-      mapInstance.closePopup();
-    }
-
-    setSelectedId(apId);
-    setFlyToId(apId);
-  }
-
-  function handleSwitchFloor(nextFloor) {
-    if (mapInstance) {
-      mapInstance.closePopup();
-    }
-
-    setActiveFloor(nextFloor);
-    setSelectedId(null);
-    setFlyToId(null);
-  }
-
-  return (
-    <div className="wrap">
-      <div className="panel">
-        <div className="header">
-          <div className="header-top">
-            <div>
-              <h1>{floor.title}</h1>
-              <p>{floor.subtitle}</p>
-            </div>
-
-            <div className="floor-switch">
-              <select
-                value={activeFloor}
-                onChange={(e) => handleSwitchFloor(e.target.value)}
-              >
-                {Object.values(floors).map((floorOption) => (
-                  <option key={floorOption.id} value={floorOption.id}>
-                    {floorOption.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="heatmap-switch">
-              <button
-                className={heatmapSsid === "csie" ? "active" : ""}
-                onClick={() => setHeatmapSsid("csie")}
-                type="button"
-              >
-                csie 熱力圖
-              </button>
-
-              <button
-                className={heatmapSsid === "csie-5G" ? "active" : ""}
-                onClick={() => setHeatmapSsid("csie-5G")}
-                type="button"
-              >
-                csie-5G 熱力圖
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="main">
-          <div className="map-area">
-            <div className="map-box">
-              <div className="floor-badge">{floor.label}</div>
-
-              <MapContainer
-                key={floor.id}
-                crs={L.CRS.Simple}
-                bounds={bounds}
-                minZoom={-2}
-                maxZoom={2}
-                zoomControl={false}
-                style={{ width: "100%", height: "100%" }}
-                whenCreated={setMapInstance}
-              >
-                <ImageOverlay url={floor.imageUrl} bounds={bounds} />
-
-                <CoordinateLogger
-                  width={floor.width}
-                  height={floor.height}
-                  activeFloor={activeFloor}
-                />
-
-                <HeatmapLayer
-                  points={heatPoints}
-                  width={floor.width}
-                  height={floor.height}
-                />
-
-                <FlyToSelected targetAp={flyToAp} width={floor.width} height={floor.height} />
-
-                {floor.aps.map((ap) => {
-                  const pxX = (ap.x / 100) * floor.width;
-                  const pxY = floor.height - ((ap.y / 100) * floor.height);
-
-                  return (
-                    <Marker
-                      key={ap.id}
-                      position={[pxY, pxX]}
-                      icon={createApIcon(ap, selectedId === ap.id)}
-                      eventHandlers={{
-                        click: () => setSelectedId(ap.id)
-                      }}
-                    >
-                      <Popup>
-                        <ApPopup ap={ap} />
-                      </Popup>
-                    </Marker>
-                  );
-                })}
-              </MapContainer>
-
-              {heatmapLoading && (
-                <div className="map-status">熱力圖載入中...</div>
-              )}
-
-              {heatmapError && (
-                <div className="map-status error">{heatmapError}</div>
-              )}
-            </div>
-          </div>
-
-          <Sidebar
-            aps={floor.aps}
-            selectedId={selectedId}
-            onSidebarSelect={handleSidebarSelect}
-            floorLabel={floor.label}
-          />
-        </div>
-
-        <div className="footer">
-          目前支援系館平面圖切換；熱力圖資料由 Django API 提供。
-          <br />
-          Last Updated: 2026.05.05
-        </div>
-      </div>
-    </div>
-  );
-}*/
-
 export default function App() {
   const [activeFloor, setActiveFloor] = useState("basement");
 
@@ -957,9 +1040,11 @@ export default function App() {
     if (mapInstance) {
       mapInstance.closePopup();
     }
+
     setActiveFloor(nextFloor);
     setSelectedId(null);
     setFlyToId(null);
+    setSelectedLocation(null);
   }
 
   return (
@@ -973,22 +1058,17 @@ export default function App() {
             </div>
 
             <div className="floor-switch">
-              <button
-                className={activeFloor === "basement" ? "active" : ""}
-                onClick={() => handleSwitchFloor("basement")}
-                type="button"
-              >
-                地下室
-              </button>
-
-              <button
-                className={activeFloor === "floor1" ? "active" : ""}
-                onClick={() => handleSwitchFloor("floor1")}
-                type="button"
-              >
-                一樓
-              </button>
-            </div>
+                <select
+                  value={activeFloor}
+                  onChange={(e) => handleSwitchFloor(e.target.value)}
+                >
+                  {Object.values(floors).map((floorOption) => (
+                    <option key={floorOption.id} value={floorOption.id}>
+                      {floorOption.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             <div className="heatmap-switch">
               <button
                 className={heatmapSsid === "csie" ? "active" : ""}
@@ -1032,9 +1112,10 @@ export default function App() {
                 />
 
                 {selectedLocation && (
-                  <AutoOpenMarker 
-                    location={selectedLocation} 
-                    onTestComplete={handleSpeedTestDone} 
+                  <AutoOpenMarker
+                    location={selectedLocation}
+                    onTestComplete={handleSpeedTestDone}
+                    onClose={() => setSelectedLocation(null)}
                   />
                 )}
 
@@ -1081,7 +1162,7 @@ export default function App() {
             aps={floor.aps}
             selectedId={selectedId}
             onSidebarSelect={handleSidebarSelect}
-            floorLabel={activeFloor === "basement" ? "地下室" : "一樓"}
+            floorLabel={floor.label}
           />
         </div>
 
