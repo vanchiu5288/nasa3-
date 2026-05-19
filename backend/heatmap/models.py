@@ -25,10 +25,13 @@ class WifiMeasurement(models.Model):
 
     channel = models.IntegerField(blank=True, null=True)
 
-    rssi = models.FloatField()
+    rssi = models.FloatField(null=True, blank=True)
     rx_rate = models.FloatField(blank=True, null=True)
     tx_rate = models.FloatField(blank=True, null=True)
-
+    
+    download_mbps = models.FloatField(null=True, blank=True)
+    metric_type = models.CharField(max_length=20, default="rssi")
+    
     measured_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
