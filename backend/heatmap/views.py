@@ -1,3 +1,5 @@
+import time
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -6,10 +8,9 @@ from .serializers import WifiMeasurementSerializer
 
 
 def rssi_to_heat_value(rssi):
-    """
-    RSSI 轉 heatmap value。
-    數值越大代表訊號越好。
-    """
+    if rssi is None:
+        return 0.0
+
     if rssi >= -35:
         return 1.0
     if rssi >= -45:
@@ -25,15 +26,31 @@ def rssi_to_heat_value(rssi):
     return 0.03
 
 
+def speed_to_heat_value(download_mbps):
+    if download_mbps is None:
+        return 0.0
+
+    value = float(download_mbps) / 300.0
+
+    if value > 1.0:
+        return 1.0
+
+    if value < 0.03:
+        return 0.03
+
+    return round(value, 4)
+
+
 @api_view(["POST"])
 def create_measurement(request):
-    """
-    POST /api/heatmap/measurements/create/
+    data = request.data.copy()
 
-    新增一筆 Wi-Fi 測量資料。
-    """
+    if not data.get("point_id"):
+        floor = data.get("floor", "unknown")
+        metric_type = data.get("metric_type", "rssi")
+        data["point_id"] = f"{metric_type}-{floor}-{int(time.time() * 1000)}"
 
-    serializer = WifiMeasurementSerializer(data=request.data)
+    serializer = WifiMeasurementSerializer(data=data)
 
     if serializer.is_valid():
         serializer.save()
@@ -56,17 +73,12 @@ def create_measurement(request):
 
 @api_view(["GET"])
 def measurement_list(request):
-    """
-    GET /api/heatmap/measurements/
-    GET /api/heatmap/measurements/?floor=basement
-    GET /api/heatmap/measurements/?floor=floor1
-    """
-
     measurements = WifiMeasurement.objects.all()
 
     floor = request.GET.get("floor")
     ssid = request.GET.get("ssid")
     bssid = request.GET.get("bssid")
+    metric = request.GET.get("metric")
     limit = request.GET.get("limit", 500)
 
     if floor:
@@ -77,6 +89,9 @@ def measurement_list(request):
 
     if bssid:
         measurements = measurements.filter(bssid=bssid)
+
+    if metric:
+        measurements = measurements.filter(metric_type=metric)
 
     try:
         limit = int(limit)
@@ -102,19 +117,12 @@ def measurement_list(request):
 
 @api_view(["GET"])
 def heatmap_data(request):
-    """
-    GET /api/heatmap/
-    GET /api/heatmap/?floor=basement
-    GET /api/heatmap/?floor=floor1
-
-    回傳給前端 leaflet.heat 使用的資料。
-    """
-
     measurements = WifiMeasurement.objects.all()
 
     floor = request.GET.get("floor")
     ssid = request.GET.get("ssid")
     bssid = request.GET.get("bssid")
+    metric = request.GET.get("metric", "rssi")
     min_rssi = request.GET.get("min_rssi")
     max_rssi = request.GET.get("max_rssi")
     limit = request.GET.get("limit", 5000)
@@ -128,17 +136,27 @@ def heatmap_data(request):
     if bssid:
         measurements = measurements.filter(bssid=bssid)
 
-    if min_rssi:
-        try:
-            measurements = measurements.filter(rssi__gte=float(min_rssi))
-        except ValueError:
-            pass
+    if metric == "speed":
+        measurements = measurements.filter(
+            metric_type="speed",
+            download_mbps__isnull=False,
+        )
+    else:
+        measurements = measurements.filter(
+            rssi__isnull=False,
+        )
 
-    if max_rssi:
-        try:
-            measurements = measurements.filter(rssi__lte=float(max_rssi))
-        except ValueError:
-            pass
+        if min_rssi:
+            try:
+                measurements = measurements.filter(rssi__gte=float(min_rssi))
+            except ValueError:
+                pass
+
+        if max_rssi:
+            try:
+                measurements = measurements.filter(rssi__lte=float(max_rssi))
+            except ValueError:
+                pass
 
     try:
         limit = int(limit)
@@ -156,13 +174,20 @@ def heatmap_data(request):
     data = []
 
     for item in measurements:
+        if metric == "speed":
+            value = speed_to_heat_value(item.download_mbps)
+        else:
+            value = round(rssi_to_heat_value(item.rssi), 4)
+
         data.append(
             {
                 "id": item.id,
                 "floor": item.floor,
                 "x": item.x,
                 "y": item.y,
-                "value": round(rssi_to_heat_value(item.rssi), 4),
+                "value": value,
+                "metric_type": item.metric_type,
+                "download_mbps": item.download_mbps,
                 "rssi": item.rssi,
                 "point_id": item.point_id,
                 "note": item.note,
@@ -178,7 +203,7 @@ def heatmap_data(request):
     return Response(
         {
             "count": len(data),
-            "metric": "rssi",
+            "metric": metric,
             "coordinate": "xy-percent",
             "floor": floor,
             "data": data,
