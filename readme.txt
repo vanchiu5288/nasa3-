@@ -24,6 +24,10 @@ http://localhost:5173/
 npm install leaflet react-leaflet
 
 Django安裝流程:
+//虛擬環境安裝套件
+python -m pip install -r requirements.txt
+python -m pip install django-cors-headers
+
 pip install django
 python -m django --version//確認版本
 django-admin startproject config . //這個不用做因為我做的時候已經先做一次config了
