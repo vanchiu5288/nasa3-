@@ -1,25 +1,21 @@
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
+# Logs
+*.log
+gunicorn.log
+
+# Python virtualenv
 .venv/
 venv/
-ENV/
 
+# Django sqlite
 db.sqlite3
-.env
+*.sqlite3
 
-.vscode/
-
-node_modules/
-dist/
-build/
-
-.DS_Store
-Thumbs.db
-.venv/
-node_modules/
-__pycache__/
-*.pyc
-.env
+# Node
+frontend/node_modules/
+frontend/dist/
