@@ -88,5 +88,12 @@ git remote set-url origin git@github.com:vanchiu5288/nasa3-.git
 source .env.local
 python manage.py runserver 0.0.0.0:8000
 
+.venv.local的內容(用來登入vsz機器):
+export VSZ_BASE_URL='https://localhost:7700'
+export VSZ_VERIFY_SSL='false'
+export VSZ_CSRF_TOKEN='E44386A8F8FF6C6DCE09878D1029B258'
+export VSZ_COOKIE='JSESSIONID=tsylxtDa2n3lcTbDYfjERq0gEFnBIUAD; wp-settings-time-1=1760418389; language=en; welcomebanner_status=dismiss; cookieconsent_status=dismiss; continueCode=vgLO6ZXP7Ym29pxd9otRtkcbfqHqvumyIbZIlPFEXt1y0NJeR5lMaDknQKWj; LPVID=MyNWIzYTRhNzdhY2I1ZGJi; LPSID-86536792=QKl8KTffTNi3GBsijWC_lQ'
+
+
 x-csrf-token:E44386A8F8FF6C6DCE09878D1029B258
 cookies:JSESSIONID=tsylxtDa2n3lcTbDYfjERq0gEFnBIUAD; wp-settings-time-1=1760418389; language=en; welcomebanner_status=dismiss; cookieconsent_status=dismiss; continueCode=vgLO6ZXP7Ym29pxd9otRtkcbfqHqvumyIbZIlPFEXt1y0NJeR5lMaDknQKWj; LPVID=MyNWIzYTRhNzdhY2I1ZGJi; LPSID-86536792=QKl8KTffTNi3GBsijWC_lQ
