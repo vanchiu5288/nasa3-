@@ -92,12 +92,12 @@ def find_wireless_client(keyword):
         headers["Cookie"] = settings.VSZ_COOKIE
 
     payload = {
-        "filters": [
-            {
-                "type": "DOMAIN",
-                "value": "8b2081d5-9662-40d9-a3db-2a3cf4dde3f7",
-            }
-        ],
+        #"filters": [
+        #    {
+        #        "type": "DOMAIN",
+        #        "value": "8b2081d5-9662-40d9-a3db-2a3cf4dde3f7",
+        #    }
+        #],
         "fullTextSearch": {
             "type": "AND",
             "value": str(keyword),
@@ -108,7 +108,7 @@ def find_wireless_client(keyword):
             "dir": "ASC",
         },
         "page": 1,
-        "limit": 20,
+        "limit": 100,
     }
 
     response = session.post(

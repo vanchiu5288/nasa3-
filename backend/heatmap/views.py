@@ -3,6 +3,8 @@ import time
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.http import JsonResponse
+from .vsz_client import find_wireless_client
 
 from .models import WifiMeasurement
 from .serializers import WifiMeasurementSerializer
@@ -233,6 +235,7 @@ def create_measurement(request):
     )
 
 
+
 @api_view(["GET"])
 def measurement_list(request):
     measurements = WifiMeasurement.objects.all()
@@ -429,3 +432,22 @@ def delete_measurement(request, measurement_id):
         },
         status=status.HTTP_200_OK,
     )
+
+def query_user_connection(request):
+    keyword = request.GET.get('keyword', '').strip()
+    
+    if not keyword:
+        return JsonResponse({'error': '請提供查詢關鍵字 (Hostname, MAC 或 IP)'}, status=400)
+    
+    try:
+        # 去 Ruckus 撈資料
+        client_data = find_wireless_client(keyword)
+        
+        if client_data:
+            return JsonResponse(client_data)
+        else:
+            return JsonResponse({'error': '找不到符合條件的設備'}, status=404)
+            
+    except Exception as e:
+        print(f"Error querying vSZ: {e}")
+        return JsonResponse({'error': '查詢發生錯誤，請檢查後端連線'}, status=500)

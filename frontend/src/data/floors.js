@@ -2,7 +2,7 @@
 
 const basementAps = [
   {
-    id: "b00", x: 65.2, y: 51.3,
+    id: "B00", x: 65.2, y: 51.3,
     note: "新館空曠區域",
     csie_bssid: "30-87-D9-31-6B-29",
     csie_rssi: -59,
@@ -14,7 +14,7 @@ const basementAps = [
     Tx_rate: 159.9
   },
   {
-    id: "b02", x: 74.8, y: 69.3,
+    id: "B02", x: 74.8, y: 69.3,
     note: "裏新館閱讀室",
     csie_bssid: "F8-E7-1E-26-45-39",
     csie_rssi: -37,
@@ -26,7 +26,7 @@ const basementAps = [
     Tx_rate: 188.4
   },
   {
-    id: "b05", x: 30.6, y: 42.9,
+    id: "B05", x: 30.6, y: 42.9,
     note: "研究室外走道",
     csie_bssid: "30-87-D9-31-7F-C9",
     csie_rssi: -35,
@@ -38,7 +38,7 @@ const basementAps = [
     Tx_rate: 275.9
   },
   {
-    id: "b04", x: 62.2, y: 73.7,
+    id: "B04_zero", x: 62.2, y: 73.7,
     note: "研究生休息區",
     csie_bssid: "34-8F-27-1E-7A-89",
     csie_rssi: -34,
@@ -50,7 +50,7 @@ const basementAps = [
     Tx_rate: 212.5
   },
   {
-    id: "b09", x: 38.0, y: 63.0,
+    id: "B09", x: 38.0, y: 63.0,
     note: "大三區內",
     csie_bssid: "30-87-D9-31-96-E9",
     csie_rssi: -34,

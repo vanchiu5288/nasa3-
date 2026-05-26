@@ -3,6 +3,7 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import AutomaticHeatmap from "./pages/AutomaticHeatmap";
 import ManualSpeedTest from "./pages/ManualSpeedTest";
 import MeasurementRecords from "./pages/MeasurementRecords";
+import SignalDotMap from "./pages/SignalDotMap";
 
 export default function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -88,7 +89,18 @@ export default function App() {
             )}
           </NavLink>
 
-          <NavLink to="/manual-test" style={navLinkStyle}>
+          <NavLink to="/dot-map" style={navLinkStyle}>
+            <span style={{ fontSize: "20px", minWidth: "24px", textAlign: "center" }}>
+              🟢
+            </span>
+            {!isCollapsed && (
+              <span style={{ marginLeft: "12px", fontSize: "16px", fontWeight: "bold" }}>
+                AP 連線紀錄點狀圖
+              </span>
+            )}
+          </NavLink>
+
+          {/*<NavLink to="/manual-test" style={navLinkStyle}>
             <span style={{ fontSize: "20px", minWidth: "24px", textAlign: "center" }}>
               📍
             </span>
@@ -97,7 +109,8 @@ export default function App() {
                 手動測速地圖
               </span>
             )}
-          </NavLink>
+          </NavLink>*/}
+
           <NavLink to="/records" style={navLinkStyle}>
             <span style={{ fontSize: "20px", minWidth: "24px", textAlign: "center" }}>
               🧾
@@ -116,6 +129,8 @@ export default function App() {
           <Route path="/" element={<AutomaticHeatmap />} />
           <Route path="/manual-test" element={<ManualSpeedTest />} />
           <Route path="/records" element={<MeasurementRecords />} />
+          <Route path="/dot-map" element={<SignalDotMap />} />
+          <Route path="/manual-test" element={<ManualSpeedTest />} />
         </Routes>
       </main>
     </div>
