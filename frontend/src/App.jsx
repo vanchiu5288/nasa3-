@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import AutomaticHeatmap from "./pages/AutomaticHeatmap";
 import ManualSpeedTest from "./pages/ManualSpeedTest";
+import MeasurementRecords from "./pages/MeasurementRecords";
 
 export default function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -97,6 +98,16 @@ export default function App() {
               </span>
             )}
           </NavLink>
+          <NavLink to="/records" style={navLinkStyle}>
+            <span style={{ fontSize: "20px", minWidth: "24px", textAlign: "center" }}>
+              🧾
+            </span>
+            {!isCollapsed && (
+              <span style={{ marginLeft: "12px", fontSize: "16px", fontWeight: "bold" }}>
+                資料紀錄
+              </span>
+            )}
+          </NavLink>
         </div>
       </nav>
 
@@ -104,6 +115,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<AutomaticHeatmap />} />
           <Route path="/manual-test" element={<ManualSpeedTest />} />
+          <Route path="/records" element={<MeasurementRecords />} />
         </Routes>
       </main>
     </div>

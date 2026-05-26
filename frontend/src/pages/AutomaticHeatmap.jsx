@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { ImageOverlay, MapContainer, Marker, Popup, useMap } from "react-leaflet";
+import {
+  ImageOverlay,
+  MapContainer,
+  Marker,
+  Popup,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
+import MeasurementModal from "../components/MeasurementModal";
 import L from "leaflet";
 import HeatmapLayer from "../components/HeatmapLayer";
 import { floors } from "../data/floors";
@@ -39,6 +47,32 @@ function FlyToSelected({ targetAp, width, height }) {
 
     map.flyTo([pxY, pxX], 0.5, { duration: 0.5 });
   }, [targetAp, width, height, map]);
+
+  return null;
+}
+
+function MapClickHandler({ width, height, activeFloor, onPointSelected }) {
+  useMapEvents({
+    click(e) {
+      const pxY = e.latlng.lat;
+      const pxX = e.latlng.lng;
+
+      const x = (pxX / width) * 100;
+      const y = ((height - pxY) / height) * 100;
+
+      if (x < 0 || x > 100 || y < 0 || y > 100) {
+        return;
+      }
+
+      onPointSelected({
+        lat: e.latlng.lat,
+        lng: e.latlng.lng,
+        x: Number(x.toFixed(2)),
+        y: Number(y.toFixed(2)),
+        floor: activeFloor,
+      });
+    },
+  });
 
   return null;
 }
@@ -218,6 +252,8 @@ export default function AutomaticHeatmap() {
   const [heatPoints, setHeatPoints] = useState([]);
   const [heatmapLoading, setHeatmapLoading] = useState(false);
   const [heatmapError, setHeatmapError] = useState(null);
+  const [selectedPoint, setSelectedPoint] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const floor = floors[activeFloor];
   const bounds = [
@@ -252,7 +288,7 @@ export default function AutomaticHeatmap() {
     }
 
     fetchHeatmap();
-  }, [activeFloor, heatmapSsid]);
+  }, [activeFloor, heatmapSsid, reloadKey]);
 
   const flyToAp = useMemo(
     () => floor.aps.find((ap) => ap.id === flyToId) ?? null,
@@ -270,6 +306,7 @@ export default function AutomaticHeatmap() {
     setActiveFloor(nextFloor);
     setSelectedId(null);
     setFlyToId(null);
+    setSelectedPoint(null);
   }
 
   return (
@@ -326,6 +363,14 @@ export default function AutomaticHeatmap() {
                 ref={setMapInstance}
               >
                 <ImageOverlay url={floor.imageUrl} bounds={bounds} />
+
+                <MapClickHandler
+                  width={floor.width}
+                  height={floor.height}
+                  activeFloor={activeFloor}
+                  onPointSelected={setSelectedPoint}
+                />
+
                 <HeatmapLayer points={heatPoints} width={floor.width} height={floor.height} />
                 <FlyToSelected targetAp={flyToAp} width={floor.width} height={floor.height} />
 
@@ -349,6 +394,16 @@ export default function AutomaticHeatmap() {
                   );
                 })}
               </MapContainer>
+
+              {selectedPoint && (
+                <MeasurementModal
+                  point={selectedPoint}
+                  floor={activeFloor}
+                  apiBaseUrl={API_BASE_URL}
+                  onClose={() => setSelectedPoint(null)}
+                  onSaved={() => setReloadKey((v) => v + 1)}
+                />
+              )}
 
               {heatmapLoading && <div className="map-status">熱力圖載入中...</div>}
               {heatmapError && <div className="map-status error">{heatmapError}</div>}
