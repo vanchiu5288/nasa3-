@@ -11,4 +11,5 @@ urlpatterns = [
     # 建立一筆測量紀錄：前端點座標 + keyword，後端查 vSZ 後存 DB
     path("measurements/create/", views.create_measurement, name="create-measurement"),
     path("measurements/<int:measurement_id>/", views.delete_measurement, name="delete-measurement"),
+    path('user-connection/', views.query_user_connection, name='user_connection'),
 ]
