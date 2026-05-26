@@ -73,3 +73,27 @@ http://127.0.0.1:8000/admin/
 系上工作站:ws1.csie.ntu.edu.tw
 wifi1的ip:172.16.127.110
 
+產生key
+ssh-keygen -t ed25519 -C "wifi1 deploy key"
+複製公鑰
+cat ~/.ssh/id_ed25519.pub
+放到github(deploy key欄位)
+ssh key確認連線
+ssh -T git@github.com
+將git remote設成ssh的模式
+git remote set-url origin git@github.com:vanchiu5288/nasa3-.git
+
+
+因為要輸入憑證，所以之後每次啟動django的時候要跑:
+source .env.local
+python manage.py runserver 0.0.0.0:8000
+
+.venv.local的內容(用來登入vsz機器):
+export VSZ_BASE_URL='https://localhost:7700'
+export VSZ_VERIFY_SSL='false'
+export VSZ_CSRF_TOKEN='E44386A8F8FF6C6DCE09878D1029B258'
+export VSZ_COOKIE='JSESSIONID=tsylxtDa2n3lcTbDYfjERq0gEFnBIUAD; wp-settings-time-1=1760418389; language=en; welcomebanner_status=dismiss; cookieconsent_status=dismiss; continueCode=vgLO6ZXP7Ym29pxd9otRtkcbfqHqvumyIbZIlPFEXt1y0NJeR5lMaDknQKWj; LPVID=MyNWIzYTRhNzdhY2I1ZGJi; LPSID-86536792=QKl8KTffTNi3GBsijWC_lQ'
+
+
+x-csrf-token:E44386A8F8FF6C6DCE09878D1029B258
+cookies:JSESSIONID=tsylxtDa2n3lcTbDYfjERq0gEFnBIUAD; wp-settings-time-1=1760418389; language=en; welcomebanner_status=dismiss; cookieconsent_status=dismiss; continueCode=vgLO6ZXP7Ym29pxd9otRtkcbfqHqvumyIbZIlPFEXt1y0NJeR5lMaDknQKWj; LPVID=MyNWIzYTRhNzdhY2I1ZGJi; LPSID-86536792=QKl8KTffTNi3GBsijWC_lQ
