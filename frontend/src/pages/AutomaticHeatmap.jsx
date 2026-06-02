@@ -12,7 +12,7 @@ import L from "leaflet";
 import HeatmapLayer from "../components/HeatmapLayer";
 import { floors } from "../data/floors";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 function getSignalColor(rssi) {
   if (typeof rssi !== "number") return "#cbd5e1";
