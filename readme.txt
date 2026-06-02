@@ -91,9 +91,36 @@ python manage.py runserver 0.0.0.0:8000
 .venv.local的內容(用來登入vsz機器):
 export VSZ_BASE_URL='https://localhost:7700'
 export VSZ_VERIFY_SSL='false'
-export VSZ_CSRF_TOKEN='E44386A8F8FF6C6DCE09878D1029B258'
-export VSZ_COOKIE='JSESSIONID=tsylxtDa2n3lcTbDYfjERq0gEFnBIUAD; wp-settings-time-1=1760418389; language=en; welcomebanner_status=dismiss; cookieconsent_status=dismiss; continueCode=vgLO6ZXP7Ym29pxd9otRtkcbfqHqvumyIbZIlPFEXt1y0NJeR5lMaDknQKWj; LPVID=MyNWIzYTRhNzdhY2I1ZGJi; LPSID-86536792=QKl8KTffTNi3GBsijWC_lQ'
+export VSZ_CSRF_TOKEN=''
+export VSZ_COOKIE=''
 
 
 x-csrf-token:E44386A8F8FF6C6DCE09878D1029B258
 cookies:JSESSIONID=tsylxtDa2n3lcTbDYfjERq0gEFnBIUAD; wp-settings-time-1=1760418389; language=en; welcomebanner_status=dismiss; cookieconsent_status=dismiss; continueCode=vgLO6ZXP7Ym29pxd9otRtkcbfqHqvumyIbZIlPFEXt1y0NJeR5lMaDknQKWj; LPVID=MyNWIzYTRhNzdhY2I1ZGJi; LPSID-86536792=QKl8KTffTNi3GBsijWC_lQ
+
+建立systemd service:
+sudo nano /etc/systemd/system/onedirector-tunnel.service
+
+放入:
+[Unit]
+Description=SSH tunnel to oneDirector
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=你的VM使用者名稱
+ExecStart=/usr/bin/ssh -N -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -L 7700:10.3.7.250:8443 ta221@172.16.215.1
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+啟動服務:
+sudo systemctl daemon-reload
+sudo systemctl enable onedirector-tunnel
+sudo systemctl start onedirector-tunnel
+查看狀態:
+systemctl status onedirector-tunnel
+看log:
+journalctl -u onedirector-tunnel -f
