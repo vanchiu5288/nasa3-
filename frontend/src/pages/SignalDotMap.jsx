@@ -20,8 +20,8 @@ function getApColor(apId) {
   for (let i = 0; i < apId.length; i++) {
     hash = apId.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const h = Math.abs(hash % 360);
-  return `hsl(${h}, 85%, 60%)`;
+  const h = Math.abs((hash * 137) % 360);
+  return `hsl(${h}, 85%, 55%)`;
 }
 
 // 自動找出 AP 屬於哪一個樓層的輔助函數
@@ -235,6 +235,16 @@ export default function SignalDotMap() {
     setFlyToId(apId);
   }
 
+  function handleResetMap() {
+    setHighlightedApId(null);
+    setSelectedId(null);
+    setFlyToId(null);
+
+    if (mapInstance) {
+      mapInstance.fitBounds(bounds);
+    }
+  }
+
   function handleSwitchFloor(nextFloor) {
     if (mapInstance) mapInstance.closePopup();
     setActiveFloor(nextFloor);
@@ -275,7 +285,10 @@ export default function SignalDotMap() {
             </div>
             
             {highlightedApId && (
-              <button onClick={() => { setHighlightedApId(null); setSelectedId(null); }} style={{ backgroundColor: "#475569", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "6px", cursor: "pointer" }}>
+              <button 
+                onClick={handleResetMap} 
+                style={{ backgroundColor: "#475569", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "6px", cursor: "pointer" }}
+              >
                 Reset
               </button>
             )}
@@ -295,10 +308,7 @@ export default function SignalDotMap() {
                 style={{ width: "100%", height: "100%" }}
                 ref={setMapInstance}
                 eventHandlers={{
-                  click: () => {
-                    setHighlightedApId(null);
-                    setSelectedId(null);
-                  }
+                  click: handleResetMap
                 }}
               >
                 <ImageOverlay url={floor.imageUrl} bounds={bounds} />
