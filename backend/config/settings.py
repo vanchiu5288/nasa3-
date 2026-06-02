@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env.local")
-load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR / ".env",override=True)
 
 # SECURITY
 SECRET_KEY = os.getenv(
@@ -16,13 +16,24 @@ SECRET_KEY = os.getenv(
     "django-insecure-kgod#+($w)h3h7o76d!$+1^by9w^gsq7xvwan*%3f-&)!#o@yv",
 )
 
-DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() == "true"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
-    "apmap.csie.org"
-    "localhost",
-    "127.0.0.1",
-    "0.0.0.0",
+    host.strip()
+    for host in os.getenv(
+        "ALLOWED_HOSTS",
+        "apmap.csie.org,localhost,127.0.0.1,0.0.0.0"
+    ).split(",")
+    if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "CSRF_TRUSTED_ORIGINS",
+        "http://apmap.csie.org,https://apmap.csie.org,http://localhost,http://127.0.0.1"
+    ).split(",")
+    if origin.strip()
 ]
 
 
