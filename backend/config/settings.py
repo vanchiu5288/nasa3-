@@ -19,6 +19,7 @@ SECRET_KEY = os.getenv(
 DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() == "true"
 
 ALLOWED_HOSTS = [
+    "apmap.csie.org"
     "localhost",
     "127.0.0.1",
     "0.0.0.0",
