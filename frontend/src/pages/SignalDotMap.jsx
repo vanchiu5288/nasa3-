@@ -3,7 +3,7 @@ import { ImageOverlay, MapContainer, Marker, Popup, CircleMarker, useMap } from 
 import L from "leaflet";
 import { floors } from "../data/floors";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 // AP 狀態顏色
 function getSignalColor(rssi) {
