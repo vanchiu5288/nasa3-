@@ -5,6 +5,9 @@ Django settings for config project.
 import os
 from pathlib import Path
 
+import ldap
+from django_auth_ldap.config import LDAPSearch
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -142,6 +145,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#LDAP
+AUTH_LDAP_SERVER_URI = "ldaps://nasaldap.nasa:636"
+CERT_PATH = os.path.join(BASE_DIR, 'nasaldap_ca.crt')
+ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, CERT_PATH)
+
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+    "dc=csie,dc=ntu,dc=edu,dc=tw",
+    ldap.SCOPE_SUBTREE,
+    "(uid=%(user)s)"
+)
+
+#AUTH_LDAP_USER_ATTR_MAP = {
+#    "email": "mail",
+#}
+
+AUTHENTICATION_BACKENDS = [
+    "django_auth_ldap.backend.LDAPBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
 
 # Internationalization
 LANGUAGE_CODE = "zh-hant"

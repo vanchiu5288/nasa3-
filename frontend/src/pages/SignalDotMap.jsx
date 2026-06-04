@@ -31,7 +31,6 @@ function findApLocation(apName) {
   
   for (const [floorId, floorData] of Object.entries(floors)) {
     for (const ap of floorData.aps) {
-      // 支援部分匹配，例如 vsz 回傳 "CSIE-B00"，地圖 ID 是 "b00"
       if (normalizedApName.includes(ap.id.toLowerCase())) {
         return { floorId, apId: ap.id };
       }
@@ -150,7 +149,9 @@ export default function SignalDotMap() {
   const [keywordInput, setKeywordInput] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchResult, setSearchResult] = useState(null);
-  const [searchWarning, setSearchWarning] = useState(null); // 用於提示 AP 不在地圖上的狀況
+  const [searchWarning, setSearchWarning] = useState(null);
+
+  const [reportStatus, setReportStatus] = useState("idle");
 
   const floor = floors[activeFloor];
   const bounds = [[0, 0], [floor.height, floor.width]];
@@ -161,7 +162,6 @@ export default function SignalDotMap() {
         setDataLoading(true);
         setDataError(null);
         
-        // 取得歷史連線點狀圖 (保留原有邏輯)
         const res = await fetch(`${API_BASE_URL}/api/heatmap/?floor=${activeFloor}&metric=rssi`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -183,7 +183,6 @@ export default function SignalDotMap() {
     [floor, flyToId]
   );
 
-  // 處理 vSZ 即時查詢
   async function handleSearch(e) {
     e.preventDefault();
     if (!keywordInput.trim()) return;
@@ -192,8 +191,8 @@ export default function SignalDotMap() {
       setSearchLoading(true);
       setSearchResult(null);
       setSearchWarning(null);
+      setReportStatus("idle");
 
-      // 改用 keyword 傳遞參數給後端
       const res = await fetch(`${API_BASE_URL}/api/heatmap/user-connection/?keyword=${encodeURIComponent(keywordInput.trim())}`);
       if (!res.ok) {
         if (res.status === 404) throw new Error("找不到符合條件的設備");
@@ -203,11 +202,9 @@ export default function SignalDotMap() {
       const data = await res.json(); 
       setSearchResult(data);
 
-      // 解析 vSZ 回傳的 ap_name (例如 "CSIE-B00")，找尋對應的地圖資料
       const location = findApLocation(data.ap_name);
 
       if (location) {
-        // 自動切換到該 AP 所在的樓層並高亮
         if (location.floorId !== activeFloor) {
           setActiveFloor(location.floorId);
         }
@@ -215,16 +212,62 @@ export default function SignalDotMap() {
         setHighlightedApId(location.apId);
         setFlyToId(location.apId);
       } else {
-        // 設備有連線，但該 AP 尚未建檔在地圖上
         setSearchWarning(`設備目前連線至 ${data.ap_name}，但該 AP 尚未標示於地圖中。`);
         setHighlightedApId(null);
         setSelectedId(null);
       }
-
     } catch (err) {
       alert(err.message);
     } finally {
       setSearchLoading(false);
+    }
+  }
+
+  // 實際的回報功能 (需要搜尋到設備)
+  async function handleReportSignal() {
+    if (!searchResult) return;
+    executeWebhookReport({
+      content: `⚠️ **Wi-Fi 訊號異常回報** ⚠️\n` +
+               `- 設備名稱: \`${searchResult.hostname || searchResult.username || "未知"}\`\n` +
+               `- MAC 地址: \`${searchResult.client_mac || "N/A"}\`\n` +
+               `- 所在 AP: \`${searchResult.ap_name}\` (SSID: ${searchResult.ssid})\n` +
+               `- 當前訊號 (RSSI): \`${searchResult.rssi} dBm\`\n` +
+               `- 當前樓層: ${floor.label}`
+    });
+  }
+
+  
+  async function handleTestReport() {
+    executeWebhookReport({
+      content: `⚠️ **[Webhook 測試] Wi-Fi 訊號異常回報** ⚠️\n` +
+               `- 測試發送時間: \`${new Date().toLocaleString()}\`\n` +
+               `- 測試設備名稱: \`NULL\`\n` +
+               `- 測試選擇 AP: \`${selectedId || 'NULL'}\`\n` +
+               `- 模擬訊號 (RSSI): \`NULL\`\n` +
+               `- 當前樓層: ${floor.label}`
+    });
+  }
+
+  async function executeWebhookReport(payload) {
+    try {
+      setReportStatus("submitting");
+      
+      const webhookUrl = import.meta.env.VITE_WEBHOOK_URL;
+      
+      const res = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Webhook 傳送失敗");
+      
+      setReportStatus("success");
+      setTimeout(() => setReportStatus("idle"), 3000); 
+    } catch (err) {
+      console.error("Report failed:", err);
+      setReportStatus("error");
+      setTimeout(() => setReportStatus("idle"), 3000);
     }
   }
 
@@ -257,7 +300,7 @@ export default function SignalDotMap() {
     <div className="wrap" style={{ height: "100%" }}>
       <div className="panel">
         <div className="header">
-          <div className="header-top" style={{ gap: "20px" }}>
+          <div className="header-top" style={{ gap: "20px", flexWrap: "wrap" }}>
             <div>
               <h1>{floor.title}（使用者連線紀錄點狀圖）</h1>
               <p>點擊AP可察看地圖上此AP的連線紀錄</p>
@@ -284,6 +327,28 @@ export default function SignalDotMap() {
               </select>
             </div>
             
+            {/* 【新增】獨立的 Webhook 測試按鈕 */}
+            <button 
+              onClick={handleTestReport}
+              disabled={reportStatus !== "idle"}
+              style={{
+                backgroundColor: reportStatus === 'success' ? '#16a34a' : reportStatus === 'error' ? '#dc2626' : '#8b5cf6',
+                color: '#fff',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                cursor: reportStatus !== "idle" ? 'not-allowed' : 'pointer',
+                fontSize: '13px',
+                fontWeight: 'bold',
+                transition: 'background-color 0.2s'
+              }}
+            >
+              {reportStatus === 'idle' && '測試 Webhook'}
+              {reportStatus === 'submitting' && '傳送中...'}
+              {reportStatus === 'success' && '✅ 測試成功'}
+              {reportStatus === 'error' && '❌ 測試失敗'}
+            </button>
+
             {highlightedApId && (
               <button 
                 onClick={handleResetMap} 
@@ -339,11 +404,9 @@ export default function SignalDotMap() {
                       }}
                     >
                       <Popup>
-                        <div style={{ color: "#000" }}>
+                        <div style={{ color: "#ffffff" }}>
                           <b>連線紀錄</b><br />
-                          {/* 【關鍵修正 3】：顯示後端傳來的 ap_name */}
                           目標 AP: {p.ap_name || "未知"}<br />
-                          {/* 【關鍵修正 4】：改用 raw_value 顯示真實的 dBm，不再顯示 0.65 */}
                           訊號強度: {p.raw_value} dBm 
                         </div>
                       </Popup>
@@ -379,7 +442,6 @@ export default function SignalDotMap() {
               {dataLoading && <div className="map-status">連線資料載入中...</div>}
               {dataError && <div className="map-status error">{dataError}</div>}
               
-              {/* === 豐富的 vSZ 即時連線資訊卡 === */}
               {searchResult && (
                 <div className="map-status" style={{ 
                   bottom: "20px", top: "auto", height: "auto", 
@@ -394,7 +456,7 @@ export default function SignalDotMap() {
                     <div style={{ fontWeight: "bold", fontSize: "16px", color: "#38bdf8" }}>
                       🎯 尋獲設備：{searchResult.hostname || searchResult.username || "未知名稱"}
                     </div>
-                    <button onClick={() => setSearchResult(null)} style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: "16px" }}>✕</button>
+                    <button onClick={() => { setSearchResult(null); setReportStatus("idle"); }} style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: "16px" }}>✕</button>
                   </div>
                   
                   <div style={{ fontSize: "14px", color: "#e2e8f0" }}>
@@ -417,6 +479,36 @@ export default function SignalDotMap() {
                     <span>📊 SNR: {searchResult.snr} dB</span>
                     <span>⬇️ Rx: {searchResult.rx_rate} Mbps</span>
                     <span>⬆️ Tx: {searchResult.tx_rate} Mbps</span>
+                  </div>
+
+                  <div style={{ 
+                    width: "100%", 
+                    marginTop: "12px", 
+                    borderTop: "1px dashed #334155", 
+                    paddingTop: "12px", 
+                    display: "flex", 
+                    justifyContent: "flex-end" 
+                  }}>
+                    <button 
+                      onClick={handleReportSignal}
+                      disabled={reportStatus !== "idle"}
+                      style={{
+                        backgroundColor: reportStatus === 'success' ? '#16a34a' : reportStatus === 'error' ? '#dc2626' : '#f59e0b',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        cursor: reportStatus !== "idle" ? 'not-allowed' : 'pointer',
+                        fontSize: '13px',
+                        fontWeight: 'bold',
+                        transition: 'background-color 0.2s'
+                      }}
+                    >
+                      {reportStatus === 'idle' && '回報 AP 異常'}
+                      {reportStatus === 'submitting' && '傳送中...'}
+                      {reportStatus === 'success' && '✅ 已回報管理員'}
+                      {reportStatus === 'error' && '❌ 回報失敗'}
+                    </button>
                   </div>
                 </div>
               )}
