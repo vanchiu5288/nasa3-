@@ -228,8 +228,9 @@ export default function SignalDotMap() {
     if (!searchResult) return;
     executeWebhookReport({
       content: `⚠️ **Wi-Fi 訊號異常回報** ⚠️\n` +
+               `- 回報時間: \`${new Date().toLocaleString()}\`\n` +
                `- 設備名稱: \`${searchResult.hostname || searchResult.username || "未知"}\`\n` +
-               `- MAC 地址: \`${searchResult.client_mac || "N/A"}\`\n` +
+               `- 使用者名稱: \`${searchResult.username || "未知"}\`\n` +
                `- 所在 AP: \`${searchResult.ap_name}\` (SSID: ${searchResult.ssid})\n` +
                `- 當前訊號 (RSSI): \`${searchResult.rssi} dBm\`\n` +
                `- 當前樓層: ${floor.label}`
@@ -241,9 +242,10 @@ export default function SignalDotMap() {
     executeWebhookReport({
       content: `⚠️ **[Webhook 測試] Wi-Fi 訊號異常回報** ⚠️\n` +
                `- 測試發送時間: \`${new Date().toLocaleString()}\`\n` +
-               `- 測試設備名稱: \`NULL\`\n` +
-               `- 測試選擇 AP: \`${selectedId || 'NULL'}\`\n` +
-               `- 模擬訊號 (RSSI): \`NULL\`\n` +
+               `- 設備名稱: \`NULL\`\n` +
+               `- 使用者名稱: \`NULL\`\n` +
+               `- 所在 AP: \`${selectedId || 'NULL'}\`\n` +
+               `- 當前訊號 (RSSI): \`NULL\`\n` +
                `- 當前樓層: ${floor.label}`
     });
   }
