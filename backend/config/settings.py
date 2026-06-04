@@ -5,11 +5,11 @@ Django settings for config project.
 import os
 from pathlib import Path
 
-import ldap
-from django_auth_ldap.config import LDAPSearch
-
+from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / ".env.local")
+load_dotenv(BASE_DIR / ".env",override=True)
 
 # SECURITY
 SECRET_KEY = os.getenv(
@@ -17,12 +17,24 @@ SECRET_KEY = os.getenv(
     "django-insecure-kgod#+($w)h3h7o76d!$+1^by9w^gsq7xvwan*%3f-&)!#o@yv",
 )
 
-DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() == "true"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "0.0.0.0",
+    host.strip()
+    for host in os.getenv(
+        "ALLOWED_HOSTS",
+        "apmap.csie.org,localhost,127.0.0.1,0.0.0.0"
+    ).split(",")
+    if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "CSRF_TRUSTED_ORIGINS",
+        "http://apmap.csie.org,https://apmap.csie.org,http://localhost,http://127.0.0.1"
+    ).split(",")
+    if origin.strip()
 ]
 
 
@@ -108,15 +120,29 @@ REST_FRAMEWORK = {
 # ssh ta221@172.16.215.1 -L 7700:10.3.7.250:8443
 # 那 VSZ_BASE_URL 就用 https://localhost:7700
 
-VSZ_BASE_URL = os.getenv("VSZ_BASE_URL", "https://localhost:7700")
-VSZ_VERIFY_SSL = os.getenv("VSZ_VERIFY_SSL", "false").lower() == "true"
+VSZ_BASE_URL = os.environ.get("VSZ_BASE_URL", "https://127.0.0.1:7700")
 
-VSZ_COOKIE = os.getenv("VSZ_COOKIE", "")
-VSZ_CSRF_TOKEN = os.getenv("VSZ_CSRF_TOKEN", "")
+# 你的 tunnel 如果是自簽憑證，verify 要 False。
+# .env 裡 VSZ_INSECURE_TLS=1 時，這裡會變成 False。
+VSZ_VERIFY_SSL = os.environ.get("VSZ_INSECURE_TLS", "1") != "1"
 
-VSZ_COOKIE_FILE = os.getenv(
+# 自動登入用
+VSZ_USERNAME = os.environ.get("VSZ_USERNAME", "")
+VSZ_PASSWORD = os.environ.get("VSZ_PASSWORD", "")
+
+# 登入 API path。
+# 如果 DevTools 看到是 v11_0，就改 .env 的 VSZ_LOGIN_PATH。
+VSZ_LOGIN_PATH = os.environ.get(
+    "VSZ_LOGIN_PATH",
+    "/wsg/api/public/v11_1/session",
+)
+
+# 手動 cookie fallback，用不到也可以留著
+VSZ_COOKIE = os.environ.get("VSZ_COOKIE", "")
+VSZ_CSRF_TOKEN = os.environ.get("VSZ_CSRF_TOKEN", "")
+VSZ_COOKIE_FILE = os.environ.get(
     "VSZ_COOKIE_FILE",
-    str(BASE_DIR / "cookies.txt"),
+    "/home/wifi1/nasa3-/backend/cookies.txt",
 )
 
 
@@ -144,28 +170,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
-#LDAP
-AUTH_LDAP_SERVER_URI = "ldaps://nasaldap.nasa:636"
-CERT_PATH = os.path.join(BASE_DIR, 'nasaldap_ca.crt')
-ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, CERT_PATH)
-
-AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    "dc=csie,dc=ntu,dc=edu,dc=tw",
-    ldap.SCOPE_SUBTREE,
-    "(uid=%(user)s)"
-)
-
-#AUTH_LDAP_USER_ATTR_MAP = {
-#    "email": "mail",
-#}
-
-AUTHENTICATION_BACKENDS = [
-    "django_auth_ldap.backend.LDAPBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
-
-AUTH_LDAP_ALWAYS_UPDATE_USER = True
 
 # Internationalization
 LANGUAGE_CODE = "zh-hant"

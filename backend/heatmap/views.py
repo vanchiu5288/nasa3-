@@ -186,9 +186,9 @@ def create_measurement(request):
     if client is None:
         return Response(
             {
-                "message": "client not found",
-                "error": "vSZ monitor 找不到這台裝置。請確認已連上 Wi-Fi，或改用 IP / MAC 查詢。",
-                "keyword": keyword,
+                "ok": False,
+                "reason": "client_not_found",
+                "message": "查不到此裝置，請改用 IP、MAC 或 vSZ 裡顯示的 hostname。",
             },
             status=404,
         )
