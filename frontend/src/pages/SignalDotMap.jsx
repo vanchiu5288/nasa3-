@@ -330,7 +330,7 @@ export default function SignalDotMap() {
             </div>
             
             {/* 【新增】獨立的 Webhook 測試按鈕 */}
-            <button 
+            {/* <button 
               onClick={handleTestReport}
               disabled={reportStatus !== "idle"}
               style={{
@@ -349,7 +349,7 @@ export default function SignalDotMap() {
               {reportStatus === 'submitting' && '傳送中...'}
               {reportStatus === 'success' && '✅ 測試成功'}
               {reportStatus === 'error' && '❌ 測試失敗'}
-            </button>
+            </button> */}
 
             {highlightedApId && (
               <button 

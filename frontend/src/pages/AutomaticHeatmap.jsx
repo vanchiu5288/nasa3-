@@ -315,7 +315,7 @@ export default function AutomaticHeatmap() {
         <div className="header">
           <div className="header-top">
             <div>
-              <h1>{floor.title}（系統 AP 熱力圖）</h1>
+              <h1>{floor.title}（系館 AP 熱力圖）</h1>
               <p>顯示 AP 回報的訊號強度熱力分佈。</p>
             </div>
 
