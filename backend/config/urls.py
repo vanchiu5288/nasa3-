@@ -26,7 +26,7 @@ urlpatterns = [
     path('login', LoginView.as_view(), name='ldap_login'),
     path('api/', include('auth_api.urls')),
 
-    path('api/iperf/', include('iperf_api.client.urls')),
+    path('api/iperf/', include('iperf_api.urls')),
     path("api/monitoring/", include("monitoring.urls")),
 
 ]
