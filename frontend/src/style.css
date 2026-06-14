@@ -216,34 +216,91 @@ body {
 /* =========================
    System Health
    ========================= */
+.map-box {
+  position: relative;
+}
+.floating-health-button {
+  position: absolute;
+  right: 14px;
+  bottom: 30px;
+  z-index: 1000;
 
-.system-health {
-  padding: 6px 10px;
+  padding: 7px 10px;
+  border: none;
   border-radius: 999px;
-  font-size: 13px;
+
+  font-size: 12px;
   font-weight: 700;
+  cursor: pointer;
+
+  background: #e5e7eb;
+  color: #111827;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-.system-health.ok {
+.floating-health-button:hover {
+  filter: brightness(0.96);
+}
+
+.floating-health-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.floating-health-button.ok {
   background: #dcfce7;
   color: #166534;
 }
 
-.system-health.warning {
+.floating-health-button.warning {
   background: #fef3c7;
   color: #92400e;
 }
 
-.system-health.degraded {
+.floating-health-button.degraded {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.heatmap-switch {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+.floating-health-button.down {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+.floating-health-result {
+  position: absolute;
+  right: 14px;
+  bottom: 75px;
+  z-index: 1000;
+
+  padding: 6px 10px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.floating-health-result.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.floating-health-result.warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.floating-health-result.degraded {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.floating-health-result.down {
+  background: #fecaca;
+  color: #7f1d1d;
 }
 /* =========================
    AP marker

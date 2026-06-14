@@ -242,6 +242,21 @@ function ApPopup({ ap }) {
   );
 }
 
+function getHealthLabel(status) {
+  switch (status) {
+    case "ok":
+      return "系統正常";
+    case "warning":
+      return "系統警告";
+    case "degraded":
+      return "系統部分異常";
+    case "down":
+      return "系統無法連線";
+    default:
+      return "尚未檢查";
+  }
+}
+
 export default function AutomaticHeatmap() {
   const [activeFloor, setActiveFloor] = useState("basement");
   const [selectedId, setSelectedId] = useState(null);
@@ -383,18 +398,6 @@ export default function AutomaticHeatmap() {
                 csie-5G 熱力圖
               </button>
 
-              <button
-                type="button"
-                onClick={handleCheckSystemHealth}
-                disabled={checkingHealth}
-              >
-                {checkingHealth ? "檢查中..." : "檢查系統狀態"}
-              </button>
-              {healthResult && (
-                <div className={`system-health ${healthResult.status}`}>
-                  系統狀態：{healthResult.status}
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -444,6 +447,22 @@ export default function AutomaticHeatmap() {
                   );
                 })}
               </MapContainer>
+
+              <button
+                type="button"
+                className={`floating-health-button ${healthResult?.status || ""}`}
+                onClick={handleCheckSystemHealth}
+                disabled={checkingHealth}
+                title="檢查系統狀態"
+              >
+                {checkingHealth ? "檢查中" : "系統檢查"}
+              </button>
+
+              {healthResult && (
+                <div className={`floating-health-result ${healthResult.status}`}>
+                  {getHealthLabel(healthResult.status)}
+                </div>
+              )}
 
               {selectedPoint && (
                 <MeasurementModal
