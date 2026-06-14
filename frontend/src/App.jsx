@@ -136,6 +136,18 @@ export default function App() {
             {!isCollapsed && <span style={{ marginLeft: "12px", fontSize: "16px", fontWeight: "bold" }}>AP 連線紀錄點狀圖</span>}
           </NavLink>
 
+
+          {/* <NavLink to="/manual-test" style={navLinkStyle}>
+            <span style={{ fontSize: "20px", minWidth: "24px", textAlign: "center" }}>
+              📍
+            </span>
+            {!isCollapsed && (
+              <span style={{ marginLeft: "12px", fontSize: "16px", fontWeight: "bold" }}>
+                手動測速地圖
+              </span>
+            )}
+          </NavLink> */}
+
           <NavLink to="/records" style={navLinkStyle}>
             <span style={{ fontSize: "20px", minWidth: "24px", textAlign: "center" }}>🧾</span>
             {!isCollapsed && <span style={{ marginLeft: "12px", fontSize: "16px", fontWeight: "bold" }}>資料紀錄</span>}

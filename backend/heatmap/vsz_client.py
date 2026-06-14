@@ -23,6 +23,14 @@ def bytes_to_mb(value):
     except (TypeError, ValueError):
         return None
 
+def bps_to_mbps(value):
+    if value is None:
+        return None
+
+    try:
+        return round(float(value) / 1000, 2)
+    except (TypeError, ValueError):
+        return None
 
 def normalize_mac(value):
     if not value:
@@ -51,8 +59,8 @@ def normalize_client(raw):
         "channel": raw.get("channel"),
 
         # vSZ 回傳的即時上下行速率
-        "rx_rate": raw.get("downlinkRate"),
-        "tx_rate": raw.get("uplinkRate"),
+        "rx_rate": bps_to_mbps(raw.get("downlinkRate")),
+        "tx_rate": bps_to_mbps(raw.get("uplinkRate")),
 
         "traffic_mb": bytes_to_mb(raw.get("traffic")),
     }

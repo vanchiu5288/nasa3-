@@ -204,15 +204,47 @@ body {
   margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;
-  background: #0b1220;
+  background: black;
 }
 
 .leaflet-container {
-  background: #0b1220;
-  width: 100%;
-  height: 100%;
+  background: white;
+  width: 80%;
+  height: 80%;
 }
 
+/* =========================
+   System Health
+   ========================= */
+
+.system-health {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.system-health.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.system-health.warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.system-health.degraded {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.heatmap-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 /* =========================
    AP marker
    ========================= */
