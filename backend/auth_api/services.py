@@ -1,15 +1,19 @@
 import ssl
 import datetime
+from pathlib import Path
+
 import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
 from ldap3 import Server, Connection, Tls, ALL
 from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 LDAP_SERVER = 'nasaldap.nasa'
 LDAP_PORT = 636
 BASE_DN = 'dc=csie,dc=ntu,dc=edu,dc=tw'
-CA_CERT_PATH = 'nasaldap_ca.crt' 
+CA_CERT_PATH = str(BASE_DIR / 'nasaldap_ca.crt')
 
 def authenticate_user_hybrid(username, password):
     """
