@@ -1,8 +1,10 @@
+import logging
 from django.db import connection
 import requests
 import shutil
 import socket
 
+logger = logging.getLogger(__name__)
 
 def check_database():
     try:
@@ -15,6 +17,7 @@ def check_database():
         }
 
     except Exception as e:
+        logger.error(f"監控警報 [資料庫]: 無法連線至資料庫 - {str(e)}")
         return {
             "status": "error",
             "message": str(e)
@@ -34,6 +37,7 @@ def check_vsz_tunnel():
             }
 
     except Exception as e:
+        logger.error(f"監控警報 [vSZ Tunnel]: Port 7700 連線失敗 - {str(e)}")
         return {
             "status": "error",
             "message": str(e)
@@ -53,17 +57,19 @@ def check_vsz_http():
         res = requests.get("http://127.0.0.1:7700/wsg/", timeout=3)
 
         if res.status_code in [200, 302, 400, 401, 403]:
+            
             return {
                 "status": "ok",
                 "status_code": res.status_code
             }
-
+        logger.warning(f"監控警報 [vSZ HTTP]: 回傳非預期的狀態碼 HTTP {res.status_code}")
         return {
             "status": "warning",
             "status_code": res.status_code
         }
 
     except Exception as e:
+        logger.error(f"監控警報 [vSZ HTTP]: 服務無回應 - {str(e)}")
         return {
             "status": "error",
             "message": str(e)
@@ -75,16 +81,15 @@ def check_disk():
         total, used, free = shutil.disk_usage("/")
         used_percent = round((used / total) * 100, 1)
 
-        return {
-            "status": "ok" if used_percent < 90 else "warning",
-            "used_percent": used_percent
-        }
+        if used_percent >= 90:
+            logger.warning(f"監控警報 [硬碟空間]: 空間即將耗盡，已使用 {used_percent}%")
+            return {"status": "warning", "used_percent": used_percent}
+            
+        return {"status": "ok", "used_percent": used_percent}
 
     except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e)
-        }
+        logger.error(f"監控警報 [硬碟空間]: 讀取硬碟狀態失敗 - {str(e)}")
+        return {"status": "error", "message": str(e)}
 
 
 def run_all_checks():

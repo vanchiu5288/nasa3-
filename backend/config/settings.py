@@ -172,6 +172,53 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False, # 保留 Django 內建的 loggers
+    'formatters': {
+        'verbose': {
+            # 詳細格式：層級 時間 模組 檔案 行號 訊息
+            'format': '[{levelname}] {asctime} {module}.py line {lineno}: {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '[{levelname}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'django_app.log'),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 3,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        # 給你自己寫的 App 用的 logger (這行可以讓你捕捉自己寫的 print)
+        # 如果你的 auth 寫在名為 'users' 的 app 裡，可以把 'myapp' 改成 'users'
+        'myapp': { 
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
 # Internationalization
 LANGUAGE_CODE = "zh-hant"
 
