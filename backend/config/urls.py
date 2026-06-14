@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/heatmap/', include('heatmap.urls')),
     path('api/iperf/', include('iperf_api.client.urls')),
+    path("api/monitoring/", include("monitoring.urls")),
 ]

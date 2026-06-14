@@ -254,6 +254,8 @@ export default function AutomaticHeatmap() {
   const [heatmapError, setHeatmapError] = useState(null);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [checkingHealth, setCheckingHealth] = useState(false);
+  const [healthResult, setHealthResult] = useState(null);
 
   const floor = floors[activeFloor];
   const bounds = [
@@ -309,6 +311,35 @@ export default function AutomaticHeatmap() {
     setSelectedPoint(null);
   }
 
+  async function handleCheckSystemHealth() {
+    try {
+      setCheckingHealth(true);
+      setHealthResult(null);
+
+      const res = await fetch(`${API_BASE_URL}/api/monitoring/health/`);
+      const json = await res.json();
+
+      setHealthResult(json);
+
+      if (json.status === "ok") {
+        alert("系統正常");
+        return;
+      }
+
+      const failedChecks = Object.entries(json.checks || {})
+        .filter(([, value]) => value.status !== "ok")
+        .map(([key, value]) => `${key}: ${value.status}${value.status_code ? ` (${value.status_code})` : ""}`)
+        .join("\n");
+
+      alert(`系統異常：${json.status}\n\n${failedChecks || "沒有詳細錯誤資訊"}`);
+    } catch (err) {
+      console.error("Health check failed:", err);
+      alert("系統異常：無法連線到後端 health check API");
+    } finally {
+      setCheckingHealth(false);
+    }
+  }
+
   return (
     <div className="wrap" style={{ height: "100%" }}>
       <div className="panel">
@@ -345,6 +376,19 @@ export default function AutomaticHeatmap() {
               >
                 csie-5G 熱力圖
               </button>
+
+              <button
+                type="button"
+                onClick={handleCheckSystemHealth}
+                disabled={checkingHealth}
+              >
+                {checkingHealth ? "檢查中..." : "檢查系統狀態"}
+              </button>
+              {healthResult && (
+                <div className={`system-health ${healthResult.status}`}>
+                  系統狀態：{healthResult.status}
+                </div>
+              )}
             </div>
           </div>
         </div>
