@@ -31,3 +31,7 @@ dist/
 # Local secret / cert
 cookies.txt
 nasaldap_ca.crt
+backend/.env
+backend/.env.local
+.env
+.env.local
