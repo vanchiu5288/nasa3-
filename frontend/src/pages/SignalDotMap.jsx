@@ -5,6 +5,20 @@ import { floors } from "../data/floors";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
+function getJwtPayload() {
+  const token = localStorage.getItem("token");
+  if (!token) return { username: "", is_admin: false };
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return {
+      username: payload.username || "",
+      is_admin: payload.is_admin || false
+    };
+  } catch (e) {
+    return { username: "", is_admin: false };
+  }
+}
+
 // AP 狀態顏色
 function getSignalColor(rssi) {
   if (typeof rssi !== "number") return "#cbd5e1";
@@ -135,6 +149,7 @@ function ApPopup({ ap }) {
 }
 
 export default function SignalDotMap() {
+  const { username: currentUsername, is_admin: isAdmin } = getJwtPayload();
   const [activeFloor, setActiveFloor] = useState("basement");
   const [selectedId, setSelectedId] = useState(null);
   const [flyToId, setFlyToId] = useState(null);
@@ -146,23 +161,32 @@ export default function SignalDotMap() {
 
   const [highlightedApId, setHighlightedApId] = useState(null);
 
-  const [keywordInput, setKeywordInput] = useState("");
+  const [keywordInput, setKeywordInput] = useState(isAdmin ? "" : currentUsername)
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchResult, setSearchResult] = useState(null);
   const [searchWarning, setSearchWarning] = useState(null);
 
   const [reportStatus, setReportStatus] = useState("idle");
+  const [reportComment, setReportComment] = useState("");
 
   const floor = floors[activeFloor];
   const bounds = [[0, 0], [floor.height, floor.width]];
+
+  
 
   useEffect(() => {
     async function fetchPoints() {
       try {
         setDataLoading(true);
         setDataError(null);
+
+        const token = localStorage.getItem("token");
         
-        const res = await fetch(`${API_BASE_URL}/api/heatmap/?floor=${activeFloor}&metric=rssi`);
+        const res = await fetch(`${API_BASE_URL}/api/heatmap/?floor=${activeFloor}&metric=rssi`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const json = await res.json();
@@ -192,6 +216,7 @@ export default function SignalDotMap() {
       setSearchResult(null);
       setSearchWarning(null);
       setReportStatus("idle");
+      setReportComment("");
 
       const res = await fetch(`${API_BASE_URL}/api/heatmap/user-connection/?keyword=${encodeURIComponent(keywordInput.trim())}`);
       if (!res.ok) {
@@ -234,6 +259,7 @@ export default function SignalDotMap() {
                `- 所在 AP: \`${searchResult.ap_name}\` (SSID: ${searchResult.ssid})\n` +
                `- 當前訊號 (RSSI): \`${searchResult.rssi} dBm\`\n` +
                `- 當前樓層: ${floor.label}`
+               `- 留言: ${reportComment ? `\n> ${reportComment}` : "`無`"}`
     });
   }
 
@@ -255,7 +281,7 @@ export default function SignalDotMap() {
       setReportStatus("submitting");
       
       const webhookUrl = import.meta.env.VITE_WEBHOOK_URL;
-      
+      const token = localStorage.getItem("token");
       const res = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -311,10 +337,20 @@ export default function SignalDotMap() {
             <form onSubmit={handleSearch} style={{ display: "flex", alignItems: "center", gap: "8px", backgroundColor: "#1e293b", padding: "6px 12px", borderRadius: "8px", border: "1px solid #334155" }}>
               <input
                 type="text"
-                placeholder="輸入 Hostname / MAC / IP"
                 value={keywordInput}
                 onChange={(e) => setKeywordInput(e.target.value)}
-                style={{ background: "none", border: "none", color: "#fff", outline: "none", fontSize: "14px", width: "220px" }}
+                disabled={!isAdmin}
+                placeholder={isAdmin ? "輸入 Hostname / MAC / IP" : ""}
+                style={{ 
+                  background: "none", 
+                  border: "none", 
+                  color: "#fff", 
+                  outline: "none", 
+                  fontSize: "14px", 
+                  width: "220px", 
+                  opacity: isAdmin ? 1 : 0.6,             // 🌟 管理員全亮，一般人半透明
+                  cursor: isAdmin ? "text" : "not-allowed" // 🌟 鼠標樣式變化
+                }}
               />
               <button type="submit" disabled={searchLoading} style={{ backgroundColor: "#0284c7", color: "#fff", border: "none", padding: "4px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "13px" }}>
                 {searchLoading ? "查詢中..." : "搜尋設備"}
@@ -458,7 +494,7 @@ export default function SignalDotMap() {
                     <div style={{ fontWeight: "bold", fontSize: "16px", color: "#38bdf8" }}>
                       🎯 尋獲設備：{searchResult.hostname || searchResult.username || "未知名稱"}
                     </div>
-                    <button onClick={() => { setSearchResult(null); setReportStatus("idle"); }} style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: "16px" }}>✕</button>
+                    <button onClick={() => { setSearchResult(null); setReportStatus("idle"); setReportComment("");}} style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: "16px" }}>✕</button>
                   </div>
                   
                   <div style={{ fontSize: "14px", color: "#e2e8f0" }}>
@@ -482,7 +518,27 @@ export default function SignalDotMap() {
                     <span>⬇️ Rx: {searchResult.rx_rate} Mbps</span>
                     <span>⬆️ Tx: {searchResult.tx_rate} Mbps</span>
                   </div>
-
+                  <div style={{ width: "100%", marginTop: "12px" }}>
+                    <textarea
+                      placeholder="請輸入留言："
+                      value={reportComment}
+                      onChange={(e) => setReportComment(e.target.value)}
+                      disabled={reportStatus !== "idle"}
+                      style={{
+                        width: "100%",
+                        minHeight: "60px",
+                        backgroundColor: "rgba(15, 23, 42, 0.5)",
+                        color: "#e2e8f0",
+                        border: "1px solid #334155",
+                        borderRadius: "6px",
+                        padding: "8px",
+                        fontSize: "13px",
+                        resize: "vertical",
+                        outline: "none",
+                        boxSizing: "border-box" // 確保 padding 不會讓寬度爆出卡片
+                      }}
+                    />
+                  </div>
                   <div style={{ 
                     width: "100%", 
                     marginTop: "12px", 
