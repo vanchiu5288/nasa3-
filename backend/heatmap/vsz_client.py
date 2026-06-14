@@ -28,7 +28,7 @@ def bps_to_mbps(value):
         return None
 
     try:
-        return round(float(value) / 1_000_000, 2)
+        return round(float(value) / 1000, 2)
     except (TypeError, ValueError):
         return None
 
