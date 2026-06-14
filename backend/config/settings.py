@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     "heatmap",
     "iperf_api",
+    "monitoring",
 ]
 
 
