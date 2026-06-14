@@ -78,7 +78,7 @@ const basementAps = [
 const floor1Aps = [
   {
     id: "R101",
-    x: 41.6, y: 62.8,
+    x: 42.1, y: 55,
     note: "101教室",
     csie_bssid: "30-87-D9-31-55-49",
     csie_rssi: -31,
@@ -90,8 +90,8 @@ const floor1Aps = [
     Tx_rate: 241.3
   },
   { id: "R102",
-    x: 68.7,
-    y: 79.8,
+    x: 63,
+    y: 67,
     note: "102教室",
     csie_bssid: "30-87-D9-31-79-E9",
     csie_rssi: -41,
@@ -103,8 +103,8 @@ const floor1Aps = [
     Tx_rate: 231.5
   },
   { id: "R103-front",
-    x: 8.3,
-    y: 69.2,
+    x: 18.6,
+    y: 60,
     note: "103教室前面",
     csie_bssid: "",
     csie_rssi: -1,
@@ -115,10 +115,10 @@ const floor1Aps = [
     Rx_rate: 172.2,
     Tx_rate: 159
   },
-  { id: "R103-rear", x: 21.5, y: 73.0, note: "" },
+  { id: "R103-rear", x: 34.3, y: 65.6, note: "" },
   { id: "R104",
-    x: 74.2,
-    y: 66.0,
+    x: 63,
+    y: 54,
     note: "104教室",
     csie_bssid: "34-8F-27-1A-E4-C9",
     csie_rssi: -27,
@@ -130,8 +130,8 @@ const floor1Aps = [
     Tx_rate: 92.7
   },
   { id: "R105",
-    x: 17.6,
-    y: 44.8,
+    x: 25,
+    y: 48,
     note: "105教室",
     csie_bssid: "30-87-D9-31-6B-A9",
     csie_rssi: -29,
@@ -143,8 +143,8 @@ const floor1Aps = [
     Tx_rate: 264.9
   },
   { id: "R106",
-    x: 70.2,
-    y: 46.8,
+    x: 61.8,
+    y: 42,
     note: "106教室",
     csie_bssid: "30-87-D9-31-52-49",
     csie_rssi: -60,
@@ -156,8 +156,8 @@ const floor1Aps = [
     Tx_rate: 157.7
   },
   { id: "R107",
-    x: 17.8,
-    y: 22.2,
+    x: 25.2,
+    y: 25,
     note: "107教室",
     csie_bssid: "30-87-D9-31-59-89",
     csie_rssi: -40,
@@ -169,13 +169,13 @@ const floor1Aps = [
     Tx_rate: 236.3
   },
   { id: "R108",
-    x: 74.5,
-    y: 27.7,
+    x: 64.4,
+    y: 31.3,
     note: ""
   },
   { id: "R110",
-    x: 82.0,
-    y: 39.3,
+    x: 71.0,
+    y: 41,
     note: "110教室",
     csie_bssid: "	30-87-D9-31-52-49",
     csie_rssi: -25,
@@ -187,8 +187,8 @@ const floor1Aps = [
     Tx_rate: 235.5
   },
   { id: "R111",
-    x: 28.6,
-    y: 29.2,
+    x: 33,
+    y: 31.2,
     note: "111教室",
     csie_bssid: "	30-87-D9-31-83-09",
     csie_rssi: -31,
@@ -203,232 +203,243 @@ const floor1Aps = [
 
 const floor2Aps = [
   { id: "R201",
-    x: 55.2,
-    y: 67.7,
+    x: 53.8,
+    y: 64.5,
     note: ""
   },
   { id: "R202",
-    x: 68.17,
-    y: 74,
-    note: ""
-  },
-  { id: "R201",
-    x: 55.2,
-    y: 67.7,
+    x: 64.7,
+    y: 69.6,
     note: ""
   },
   { id: "R204",
-    x: 68.13,
-    y: 55,
+    x: 64.7,
+    y: 54,
     note: ""
   },
   { id: "R208",
-    x: 63.9,
-    y: 36,
+    x: 61,
+    y: 39,
     note: ""
   },
   { id: "R210",
-    x: 78.2,
-    y: 32.7,
+    x: 73.3,
+    y: 36,
     note: ""
   },
   { id: "R205",
-    x: 45,
-    y: 72,
+    x: 40.2,
+    y: 66.5,
     note: ""
   },
   { id: "R209",
-    x: 24.2,
-    y: 76.9,
+    x: 27.4,
+    y: 72,
     note: ""
   },
   { id: "R214",
-    x: 62.1,
-    y: 26.75,
+    x: 59.5,
+    y: 30.8,
     note: ""
   },
   { id: "R218",
-    x: 48.5,
-    y: 26.8,
+    x: 48,
+    y: 30.8,
     note: ""
   },
   { id: "R217",
-    x: 29,
-    y: 55,
+    x: 31.4,
+    y: 53.4,
     note: ""
   },
   { id: "R219",
-    x: 29.3,
-    y: 41.35,
+    x: 31.4,
+    y: 42.5,
     note: ""
   },
-  { id: "R218",
-    x: 17.3,
-    y: 23.8,
+  { id: "R223-A",
+    x: 21.5,
+    y: 28.5,
     note: ""
   }
 ];
 const floor3Aps = [
-  { id: "R303",
+  {
+    id: "R303",
+    x: 44.2,
+    y: 53,
+    note: ""
+  },
+  {
+    id: "R305",
+    x: 33.7,
+    y: 53,
+    note: ""
+  },
+  {
+    id: "R306",
+    x: 67.5,
+    y: 53,
+    note: ""
+  },
+  {
+    id: "R309",
+    x: 23.5,
+    y: 71,
+    note: ""
+  },
+  {
+    id: "R310",
+    x: 74.3,
+    y: 71.5,
+    note: ""
+  },
+  {
+    id: "R317",
+    x: 23.5,
+    y: 60.5,
+    note: ""
+  },
+  {
+    id: "R318",
+    x: 74.3,
+    y: 60,
+    note: ""
+  },
+  {
+    id: "R321",
+    x: 23.5,
+    y: 48.3,
+    note: ""
+  },
+  {
+    id: "R324",
+    x: 74.3,
+    y: 46.5,
+    note: ""
+  },
+  {
+    id: "R327",
+    x: 23.5,
+    y: 32.5,
+    note: ""
+  },
+  {
+    id: "R328",
+    x: 74.3,
+    y: 36,
+    note: ""
+  },
+  {
+    id: "R331",
+    x: 23.5,
+    y: 21,
+    note: ""
+  },
+  {
+    id: "R332",
+    x: 74.3,
+    y: 19,
+    note: ""
+  },
+  {
+    id: "R338",
+    x: 63.6,
+    y: 28.4,
+    note: ""
+  },
+  {
+    id: "R342",
+    x: 55,
+    y: 28.4,
+    note: ""
+  },
+  {
+    id: "R344",
     x: 45.3,
-    y: 56.4,
-    note: ""
-  },
-  { id: "R305",
-    x: 33.2,
-    y: 56,
-    note: ""
-  },
-  { id: "R306",
-    x: 72.5,
-    y: 56,
-    note: ""
-  },
-  { id: "R309",
-    x: 21,
-    y: 78,
-    note: ""
-  },
-  { id: "R310",
-    x: 81,
-    y: 80,
-    note: ""
-  },
-  { id: "R317",
-    x: 21.1,
-    y: 64.7,
-    note: ""
-  },
-  { id: "R318",
-    x: 80.8,
-    y: 64.6,
-    note: ""
-  },
-  { id: "R321",
-    x: 21.2,
-    y: 50,
-    note: ""
-  },
-  { id: "R324",
-    x: 81,
-    y: 48,
-    note: ""
-  },
-  { id: "R327",
-    x: 21.3,
-    y: 30.4,
-    note: ""
-  },
-  { id: "R331",
-    x: 21.3,
-    y: 16,
-    note: ""
-  },
-  { id: "R332",
-    x: 81,
-    y: 14.2,
-    note: ""
-  },
-  { id: "R321",
-    x: 21.2,
-    y: 50,
-    note: ""
-  },
-  { id: "R338",
-    x: 67.8,
-    y: 25.2,
-    note: ""
-  },
-  { id: "R342",
-    x: 58,
-    y: 25.3,
-    note: ""
-  },
-  { id: "R344",
-    x: 46.7,
-    y: 25.5,
+    y: 28.4,
     note: ""
   }
 ];
 const floor4Aps = [
   { id: "R401",
-    x: 44.2,
-    y: 56.2,
+    x: 44.6,
+    y: 59.5,
     note: ""
   },
   { id: "R402",
     x: 65.7,
-    y: 58,
+    y: 62,
     note: ""
   },
   { id: "R405",
-    x: 29.75,
-    y: 55,
+    x: 30.5,
+    y: 58.7,
     note: ""
   },
   { id: "R409",
-    x: 19.2,
-    y: 78.4,
+    x: 20.6,
+    y: 78.9,
     note: ""
   },
   { id: "R410",
-    x: 78.1,
-    y: 77,
+    x: 76.8,
+    y: 78.5,
     note: ""
   },
   { id: "R417",
-    x: 19,
-    y: 60,
+    x: 20.6,
+    y: 63,
     note: ""
   },
   { id: "R418",
-    x: 78.3,
-    y: 61.2,
+    x: 76.8,
+    y: 64,
     note: ""
   },
   { id: "R423",
-    x: 17.3,
-    y: 43.6,
+    x: 18.4,
+    y: 48,
     note: ""
   },
   { id: "R424",
-    x: 78.2,
-    y: 43.7,
+    x: 76.8,
+    y: 49,
     note: ""
   },
   { id: "R428",
-    x: 77.9,
-    y: 30.5,
+    x: 76.8,
+    y: 36,
     note: ""
   },
   { id: "R432",
-    x: 77.9,
-    y: 13.8,
+    x: 76.8,
+    y: 21,
     note: ""
   },
   { id: "R433",
-    x: 19.2,
-    y: 16,
+    x: 20.6,
+    y: 23,
     note: ""
   },
   { id: "R438",
-    x: 70.3,
-    y: 24.7,
+    x: 69.5,
+    y: 31.7,
     note: ""
   },
   { id: "R439",
-    x: 21.8,
-    y: 29.6,
+    x: 23.4,
+    y: 36,
     note: ""
   },
   { id: "R442",
     x: 55.2,
-    y: 24.6,
+    y: 31.7,
     note: ""
   },
   { id: "R444",
-    x: 45.4,
-    y: 24.3,
+    x: 45.7,
+    y: 31.7,
     note: ""
   }
 ];
@@ -543,9 +554,9 @@ export const floors = {
     label: "地下室",
     title: "系館地下室 AP 地圖",
     subtitle: "地下室 AP 點位示意圖",
-    imageUrl: "/images/basement_page.png",
-    width: 1684,
-    height: 1191,
+    imageUrl: "/images/floor-plan-B1.svg",
+    width: 1620,
+    height: 1200,
     aps: basementAps,
   },
 
@@ -554,9 +565,9 @@ export const floors = {
     label: "一樓",
     title: "系館一樓 AP 地圖",
     subtitle: "一樓 AP 點位示意圖",
-    imageUrl: "/images/floor1_page.png",
-    width: 1684,
-    height: 1191,
+    imageUrl: "/images/floor-plan-1F.svg",
+    width: 1620,
+    height: 1200,
     aps: floor1Aps,
   },
 
@@ -565,9 +576,9 @@ export const floors = {
     label: "二樓",
     title: "系館二樓 AP 地圖",
     subtitle: "二樓 AP 點位示意圖",
-    imageUrl: "/images/floor2_page.png",
-    width: 1684,
-    height: 1191,
+    imageUrl: "/images/floor-plan-2F.svg",
+    width: 1620,
+    height: 1200,
     aps: floor2Aps,
   },
 
@@ -576,9 +587,9 @@ export const floors = {
     label: "三樓",
     title: "系館三樓 AP 地圖",
     subtitle: "三樓 AP 點位示意圖",
-    imageUrl: "/images/floor3_page.png",
-    width: 1684,
-    height: 1191,
+    imageUrl: "/images/floor-plan-3F.svg",
+    width: 1620,
+    height: 1200,
     aps: floor3Aps,
   },
 
@@ -587,9 +598,9 @@ export const floors = {
     label: "四樓",
     title: "系館四樓 AP 地圖",
     subtitle: "四樓 AP 點位示意圖",
-    imageUrl: "/images/floor4_page.png",
-    width: 1684,
-    height: 1191,
+    imageUrl: "/images/floor-plan-4F.svg",
+    width: 1600,
+    height: 1200,
     aps: floor4Aps,
   },
 

@@ -100,7 +100,7 @@ export default function App() {
             )}
           </NavLink>
 
-          {/*<NavLink to="/manual-test" style={navLinkStyle}>
+          {/* <NavLink to="/manual-test" style={navLinkStyle}>
             <span style={{ fontSize: "20px", minWidth: "24px", textAlign: "center" }}>
               📍
             </span>
@@ -109,7 +109,7 @@ export default function App() {
                 手動測速地圖
               </span>
             )}
-          </NavLink>*/}
+          </NavLink> */}
 
           <NavLink to="/records" style={navLinkStyle}>
             <span style={{ fontSize: "20px", minWidth: "24px", textAlign: "center" }}>
