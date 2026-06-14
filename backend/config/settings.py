@@ -16,7 +16,7 @@ SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
     "django-insecure-kgod#+($w)h3h7o76d!$+1^by9w^gsq7xvwan*%3f-&)!#o@yv",
 )
-
+#DEBUG = True
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
@@ -187,3 +187,4 @@ STATIC_URL = "static/"
 
 # Django 6.0 建議明確設定
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

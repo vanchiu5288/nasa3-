@@ -2,6 +2,16 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
+function getCurrentUsername() {
+  const token = localStorage.getItem("token");
+  if (!token) return "";
+  try {
+    return JSON.parse(atob(token.split(".")[1])).username || "";
+  } catch (e) {
+    return "";
+  }
+}
+
 function formatValue(value, fallback = "-") {
   if (value === null || value === undefined || value === "") return fallback;
   return value;
@@ -23,13 +33,23 @@ export default function MeasurementRecords() {
   const [records, setRecords] = useState([]);
   const [floor, setFloor] = useState("");
   const [ssid, setSsid] = useState("");
+  const { username: currentUsername, is_admin: isAdmin } = getJwtPayload();
   const [keyword, setKeyword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   const [expandedId, setExpandedId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  
+
+  function getJwtPayload() {
+  const token = localStorage.getItem("token");
+  if (!token) return { username: "", is_admin: false };
+  try {
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch (e) {
+    return { username: "", is_admin: false };
+  }
+}
 
   async function loadRecords() {
     try {
@@ -37,14 +57,21 @@ export default function MeasurementRecords() {
       setError("");
 
       const params = new URLSearchParams();
-
+      
       if (floor) params.set("floor", floor);
       if (ssid) params.set("ssid", ssid);
-      if (keyword.trim()) params.set("keyword", keyword.trim());
-
+      if (!isAdmin && currentUsername) {
+        params.set("keyword", currentUsername);
+      } else if (isAdmin && keyword.trim()) {
+        params.set("keyword", keyword.trim());
+      }
       params.set("limit", "1000");
 
-      const res = await fetch(`${API_BASE_URL}/api/heatmap/measurements/?${params.toString()}`);
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE_URL}/api/heatmap/measurements/?${params.toString()}`, {
+        headers: { "Authorization": `Bearer ${token}` } 
+      });
+      
       const json = await res.json().catch(() => ({}));
 
       if (!res.ok) {
@@ -120,7 +147,7 @@ export default function MeasurementRecords() {
         <div className="header">
           <div className="header-top">
             <div>
-              <h1>熱力圖資料紀錄</h1>
+              <h1>{isAdmin ? "全站熱力圖資料紀錄" : "我的熱力圖資料紀錄"}</h1>
               <p>
                 查看每一筆上傳到熱力圖的資料，包含 vSZ 回傳的 client、AP、RSSI、SNR
                 等資訊。
@@ -146,15 +173,16 @@ export default function MeasurementRecords() {
             <option value="csie">csie</option>
             <option value="csie-5G">csie-5G</option>
           </select>
-
-          <input
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") loadRecords();
-            }}
-            placeholder="搜尋 keyword / hostname"
-          />
+          {isAdmin && (
+            <input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") loadRecords();
+              }}
+              placeholder=" keyword / hostname"
+            />
+          )}
 
           <button type="button" onClick={loadRecords}>
             查詢

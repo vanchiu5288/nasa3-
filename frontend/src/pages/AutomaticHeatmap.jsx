@@ -12,7 +12,7 @@ import L from "leaflet";
 import HeatmapLayer from "../components/HeatmapLayer";
 import { floors } from "../data/floors";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
 function getSignalColor(rssi) {
   if (typeof rssi !== "number") return "#cbd5e1";
@@ -273,7 +273,13 @@ export default function AutomaticHeatmap() {
           metric: "rssi",
         });
 
-        const res = await fetch(`${API_BASE_URL}/api/heatmap/?${params.toString()}`);
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`${API_BASE_URL}/api/heatmap/?${params.toString()}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const json = await res.json();

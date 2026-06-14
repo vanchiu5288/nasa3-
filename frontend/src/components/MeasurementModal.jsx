@@ -1,4 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function getCurrentUsername() {
+  const token = localStorage.getItem("token");
+  if (!token) return "";
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.username || "";
+  } catch (e) {
+    return "";
+  }
+}
 
 export default function MeasurementModal({
   point,
@@ -11,19 +22,25 @@ export default function MeasurementModal({
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    setKeyword(getCurrentUsername());
+  }, []);
+
   async function handleSubmit() {
     if (!keyword.trim()) {
-      alert("請輸入 hostname / IP / MAC");
+      alert("請輸入 username:");
       return;
     }
 
     setLoading(true);
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${apiBaseUrl}/api/heatmap/measurements/create/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
           floor,
@@ -68,18 +85,19 @@ export default function MeasurementModal({
           座標：{point.x.toFixed(2)}%, {point.y.toFixed(2)}%
         </p>
 
-        <label>Hostname / IP / MAC</label>
+        <label>Username</label>
         <input
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          placeholder="例如 DESKTOP-T4H、10.5.6.125、00:11:22:33:44:55"
+          disabled
+          style={{ opacity: 0.6, cursor: "not-allowed" }}
+          placeholder="例如：b14902000"
         />
 
         <label>備註</label>
         <input
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="例如 R103 後方座位"
+          placeholder="例如：R103 後方座位"
         />
 
         <div className="modal-actions">

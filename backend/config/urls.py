@@ -16,9 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from auth_api.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/heatmap/', include('heatmap.urls')),
-    path('api/iperf/', include('iperf_api.client.urls')),
+    path('api/iperf/', include('iperf_api.urls')),
+    path('login', LoginView.as_view(), name='ldap_login'),
+    path('api/', include('auth_api.urls')),
 ]
