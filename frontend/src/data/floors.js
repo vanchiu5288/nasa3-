@@ -495,8 +495,8 @@ const floor5Aps = [
     note: ""
   },
   { id: "R531",
-    x: 19.4,
-    y: 14,
+    x: 20.6,
+    y: 23.5,
     note: ""
   },
   { id: "R532",
@@ -510,8 +510,8 @@ const floor5Aps = [
     note: ""
   },
   { id: "R539",
-    x: 22.2,
-    y: 28.6,
+    x: 23.3,
+    y: 35.6,
     note: ""
   },
   { id: "R542",
@@ -527,23 +527,23 @@ const floor5Aps = [
 ];
 const floor6Aps = [
   { id: "R600",
-    x: 8,
-    y: 69,
+    x: 14.2,
+    y: 65,
     note: ""
   },
   { id: "R601",
-    x: 21,
-    y: 42.3,
+    x: 25.4,
+    y: 43,
     note: ""
   },
   { id: "R603",
-    x: 35.6,
-    y: 74,
+    x: 38.5,
+    y: 68.2,
     note: ""
   },
   { id: "R605",
-    x: 52,
-    y: 74,
+    x: 59.2,
+    y: 68.2,
     note: ""
   },
 ];
@@ -611,7 +611,7 @@ export const floors = {
     subtitle: "五樓 AP 點位示意圖",
     imageUrl: "/images/floor5_page.png",
     width: 1684,
-    height: 1191,
+    height: 1580,
     aps: floor5Aps,
   },
 
@@ -620,9 +620,9 @@ export const floors = {
     label: "六樓",
     title: "系館六樓 AP 地圖",
     subtitle: "六樓 AP 點位示意圖",
-    imageUrl: "/images/floor6_page.png",
-    width: 1684,
-    height: 1191,
+    imageUrl: "/images/floor-plan-6F.svg",
+    width: 1600,
+    height: 1200,
     aps: floor6Aps,
   },
 };
