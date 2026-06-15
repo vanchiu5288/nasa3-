@@ -445,53 +445,53 @@ const floor4Aps = [
 ];
 const floor5Aps = [
   { id: "R501",
-    x: 45,
-    y: 57,
+    x: 44.7,
+    y: 60,
     note: ""
   },
   { id: "R502",
-    x: 67.6,
-    y: 59,
-    note: ""
-  },
-  { id: "R505",
-    x: 33.9,
-    y: 55.8,
-    note: ""
-  },
-  { id: "R509",
-    x: 19.2,
-    y: 79,
-    note: ""
-  },
-  { id: "R510",
-    x: 80.2,
-    y: 80,
-    note: ""
-  },
-  { id: "R517",
-    x: 19,
+    x: 65.5,
     y: 62,
     note: ""
   },
+  { id: "R505",
+    x: 34.4,
+    y: 59.5,
+    note: ""
+  },
+  { id: "R509",
+    x: 20.5,
+    y: 79.3,
+    note: ""
+  },
+  { id: "R510",
+    x: 77,
+    y: 79.5,
+    note: ""
+  },
+  { id: "R517",
+    x: 20.5,
+    y: 64.5,
+    note: ""
+  },
   { id: "R518",
-    x: 80,
-    y: 63,
+    x: 77,
+    y: 65,
     note: ""
   },
   { id: "R523",
-    x: 17,
-    y: 43,
+    x: 18.6,
+    y: 48.5,
     note: ""
   },
   { id: "R524",
-    x: 80.2,
-    y: 48.7,
+    x: 77,
+    y: 53,
     note: ""
   },
   { id: "R528",
-    x: 80,
-    y: 32,
+    x: 77,
+    y: 39.5,
     note: ""
   },
   { id: "R531",
@@ -500,13 +500,13 @@ const floor5Aps = [
     note: ""
   },
   { id: "R532",
-    x: 80.1,
-    y: 13.4,
+    x: 77,
+    y: 22.8,
     note: ""
   },
   { id: "R538",
-    x: 67.2,
-    y: 23.8,
+    x: 65,
+    y: 32,
     note: ""
   },
   { id: "R539",
@@ -515,13 +515,13 @@ const floor5Aps = [
     note: ""
   },
   { id: "R542",
-    x: 56.15,
-    y: 24,
+    x: 55,
+    y: 32,
     note: ""
   },
   { id: "R544",
-    x: 46.2,
-    y: 24,
+    x: 45.7,
+    y: 32,
     note: ""
   },
 ];
@@ -609,9 +609,9 @@ export const floors = {
     label: "五樓",
     title: "系館五樓 AP 地圖",
     subtitle: "五樓 AP 點位示意圖",
-    imageUrl: "/images/floor5_page.png",
-    width: 1684,
-    height: 1580,
+    imageUrl: "/images/floor-plan-5F.svg",
+    width: 1600,
+    height: 1200,
     aps: floor5Aps,
   },
 
