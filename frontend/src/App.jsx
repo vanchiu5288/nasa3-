@@ -6,7 +6,7 @@ import MeasurementRecords from "./pages/MeasurementRecords";
 import SignalDotMap from "./pages/SignalDotMap";
 import Login from "./pages/Login"; // 確保你有引入 Login 元件！
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export default function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);

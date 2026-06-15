@@ -249,49 +249,64 @@ export default function SignalDotMap() {
   }
 
   // 實際的回報功能 (需要搜尋到設備)
+  // 實際的回報功能，需要先搜尋到設備
   async function handleReportSignal() {
     if (!searchResult) return;
-    executeWebhookReport({
-      content: `⚠️ **Wi-Fi 訊號異常回報** ⚠️\n` +
-               `- 回報時間: \`${new Date().toLocaleString()}\`\n` +
-               `- 設備名稱: \`${searchResult.hostname || searchResult.username || "未知"}\`\n` +
-               `- 使用者名稱: \`${searchResult.username || "未知"}\`\n` +
-               `- 所在 AP: \`${searchResult.ap_name}\` (SSID: ${searchResult.ssid})\n` +
-               `- 當前訊號 (RSSI): \`${searchResult.rssi} dBm\`\n` +
-               `- 當前樓層: ${floor.label}`
-               `- 留言: ${reportComment ? `\n> ${reportComment}` : "`無`"}`
-    });
+
+    const message =
+      `⚠️ **Wi-Fi 訊號異常回報** ⚠️\n` +
+      `- 回報時間: \`${new Date().toLocaleString()}\`\n` +
+      `- 設備名稱: \`${searchResult.hostname || searchResult.username || "未知"}\`\n` +
+      `- 使用者名稱: \`${searchResult.username || "未知"}\`\n` +
+      `- 所在 AP: \`${searchResult.ap_name || "未知"}\` (SSID: ${searchResult.ssid || "未知"})\n` +
+      `- 當前訊號 (RSSI): \`${searchResult.rssi ?? "未知"} dBm\`\n` +
+      `- 當前樓層: ${floor.label}\n` +
+      `- 留言: ${reportComment ? `\n> ${reportComment}` : "`無`"}`;
+
+    executeWebhookReport({ message });
   }
 
-  
   async function handleTestReport() {
-    executeWebhookReport({
-      content: `⚠️ **[Webhook 測試] Wi-Fi 訊號異常回報** ⚠️\n` +
-               `- 測試發送時間: \`${new Date().toLocaleString()}\`\n` +
-               `- 設備名稱: \`NULL\`\n` +
-               `- 使用者名稱: \`NULL\`\n` +
-               `- 所在 AP: \`${selectedId || 'NULL'}\`\n` +
-               `- 當前訊號 (RSSI): \`NULL\`\n` +
-               `- 當前樓層: ${floor.label}`
-    });
+    const message =
+      `⚠️ **[Webhook 測試] Wi-Fi 訊號異常回報** ⚠️\n` +
+      `- 測試發送時間: \`${new Date().toLocaleString()}\`\n` +
+      `- 設備名稱: \`NULL\`\n` +
+      `- 使用者名稱: \`NULL\`\n` +
+      `- 所在 AP: \`${selectedId || "NULL"}\`\n` +
+      `- 當前訊號 (RSSI): \`NULL\`\n` +
+      `- 當前樓層: ${floor.label}`;
+
+    executeWebhookReport({ message });
   }
 
   async function executeWebhookReport(payload) {
     try {
       setReportStatus("submitting");
-      
-      const webhookUrl = import.meta.env.VITE_WEBHOOK_URL;
+
       const token = localStorage.getItem("token");
-      const res = await fetch(webhookUrl, {
+
+      const res = await fetch(`${API_BASE_URL}/api/discord-webhook/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Webhook 傳送失敗");
-      
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || "Webhook 傳送失敗");
+      }
+
       setReportStatus("success");
-      setTimeout(() => setReportStatus("idle"), 3000); 
+      setTimeout(() => setReportStatus("idle"), 3000);
     } catch (err) {
       console.error("Report failed:", err);
       setReportStatus("error");
