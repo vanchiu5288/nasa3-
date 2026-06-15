@@ -2,6 +2,7 @@ from __future__ import annotations
 import re
 import threading
 import time
+import logging
 from http.cookiejar import MozillaCookieJar
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -9,7 +10,7 @@ from typing import Any, Dict, Optional
 import requests
 from django.conf import settings
 
-
+logger = logging.getLogger(__name__)
 class VSZClientError(Exception):
     pass
 
@@ -237,13 +238,14 @@ class VSZClient:
 
         3. requests.Session 會自動保存 cookie。
         """
-
+        logger.info("vSZ Client 開始執行登入流程...")
         if not self._has_login_credentials():
             # 沒有帳密就使用手動 cookie 模式
             if self.manual_cookie or load_cookiejar() is not None:
+                logger.info("未提供帳密，但發現手動 Cookie 檔案，將使用 Cookie 模式")
                 self.logged_in = True
                 return
-
+            logger.error("vSZ 登入失敗：缺少帳號密碼，且無手動 Cookie 可用")
             raise VSZClientError(
                 "Missing VSZ_USERNAME / VSZ_PASSWORD, and no manual VSZ_COOKIE or VSZ_COOKIE_FILE is available"
             )
@@ -263,6 +265,7 @@ class VSZClient:
         )
 
         if get_response.status_code != 200:
+            logger.error(f"vSZ CAS 登入頁面載入失敗 (HTTP {get_response.status_code})")
             raise VSZClientError(
                 "CAS login page failed: "
                 f"status={get_response.status_code}, "
@@ -303,6 +306,7 @@ class VSZClient:
             # 如果已經有 CAS / WSG session，GET /cas/login 可能會直接導到 /wsg/
             # 這時候頁面不會再有 execution hidden field。
             # 所以改成嘗試直接開 /wsg/ 並抓 CSRF token。
+            logger.warning("在 CAS 登入頁找不到 execution 隱藏欄位，嘗試直接獲取 /wsg/ CSRF token")
             wsg_response = self.session.get(
                 self._url("/wsg/"),
                 headers={
@@ -318,9 +322,10 @@ class VSZClient:
                 self.csrf_token = self._extract_csrf_token(wsg_response)
 
                 if self.csrf_token:
+                    logger.info("成功繞過 CAS，直接透過 /wsg/ 取得 CSRF token 並登入")
                     self.logged_in = True
                     return
-
+            logger.error("無法抓取 CAS 隱藏欄位，且無法從 /wsg/ 提取 CSRF token")
             raise VSZClientError(
                 "Cannot find CAS hidden field: execution, and cannot extract CSRF token from /wsg/. "
                 "This means the login page format is different than expected or login did not complete."
@@ -354,6 +359,7 @@ class VSZClient:
         )
 
         if post_response.status_code not in (200, 302):
+            logger.error(f"vSZ CAS 登入送出失敗 (HTTP {post_response.status_code})")
             raise VSZClientError(
                 "CAS login submit failed: "
                 f"status={post_response.status_code}, "
@@ -373,6 +379,7 @@ class VSZClient:
         )
 
         if wsg_response.status_code != 200:
+            logger.error(f"vSZ 登入後重導向至 /wsg/ 失敗 (HTTP {wsg_response.status_code})")
             raise VSZClientError(
                 "Open /wsg/ after CAS login failed: "
                 f"status={wsg_response.status_code}, "
@@ -382,6 +389,7 @@ class VSZClient:
         # 如果登入後還停在 CAS login 頁，代表帳密錯或 CAS payload 不完整
         body_preview = wsg_response.text[:1000].lower()
         if "name=\"username\"" in body_preview or "cas/css" in body_preview or "login" in body_preview and "password" in body_preview:
+            logger.error("vSZ 登入未完成，可能帳號密碼錯誤，畫面仍停留在登入頁")
             raise VSZClientError(
                 "CAS login did not complete. Still seeing login page. "
                 "Please check VSZ_USERNAME, VSZ_PASSWORD, or CAS form payload."
@@ -392,11 +400,12 @@ class VSZClient:
 
         # 最後確認至少有 cookie
         if not list(self.session.cookies):
+            logger.error("vSZ CAS 登入流程結束，但未儲存任何 Cookie，登入可能失效")
             raise VSZClientError(
                 "CAS login finished but no cookies were stored. "
                 "Login probably did not actually succeed."
             )
-
+        logger.info("vSZ Client 登入成功！")
         self.logged_in = True
 
     def request(
@@ -425,16 +434,21 @@ class VSZClient:
         if extra_headers:
             headers.update(extra_headers)
 
-        response = self.session.request(
-            method=method.upper(),
-            url=url,
-            headers=headers,
-            verify=self.verify_ssl,
-            timeout=kwargs.pop("timeout", 15),
-            **kwargs,
-        )
+        try:
+            response = self.session.request(
+                method=method.upper(),
+                url=url,
+                headers=headers,
+                verify=self.verify_ssl,
+                timeout=kwargs.pop("timeout", 15),
+                **kwargs,
+            )
+        except requests.RequestException as e:
+            logger.exception(f"向 vSZ 發送請求時發生網路底層錯誤: {url}")
+            raise
 
         if response.status_code in (401, 403) and retry_login:
+            logger.warning(f"vSZ 請求回傳 {response.status_code}，Session 可能已過期，正在嘗試重新登入...")
             with self.lock:
                 self.logged_in = False
                 self.login()
@@ -451,6 +465,8 @@ class VSZClient:
                 timeout=15,
                 **kwargs,
             )
+            if response.status_code == 200:
+                logger.info("vSZ 重新登入並重試請求成功！")
 
         return response
 

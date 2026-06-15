@@ -1,6 +1,8 @@
 import requests
+import logging
 
 API_URL = "http://localhost:8000/api/heatmap/measurements/create/"
+logger = logging.getLogger(__name__)
 
 # 先用前端 CoordinateLogger 點出每個 M 點的 x, y，再填到這裡
 # 注意：這裡的 x, y 是百分比座標，不是像素座標
@@ -168,6 +170,7 @@ ROWS = [
 
 
 def main():
+    logger.info(f"開始批次匯入測量點資料，共 {len(ROWS)} 筆")
     for row in ROWS:
         key = (row["floor"], row["point_id"])
         x, y = COORDS.get(key, (None, None))
@@ -194,13 +197,21 @@ def main():
             "tx_rate": row["tx_rate"],
         }
 
-        res = requests.post(API_URL, json=payload, timeout=10)
+        try:
+            res = requests.post(API_URL, json=payload, timeout=10)
 
-        if res.status_code == 201:
-            print(f"OK {row['floor']} {row['ssid']} {row['point_id']}")
-        else:
-            print(f"FAIL {row['floor']} {row['ssid']} {row['point_id']}")
-            print(res.status_code, res.text)
+            if res.status_code == 201:
+                # 成功時記錄 info
+                logger.info(f"匯入成功 (OK): {row['floor']} {row['ssid']} {row['point_id']}")
+            else:
+                # API 拒絕時記錄 warning
+                logger.warning(f"匯入失敗 (FAIL): {row['floor']} {row['ssid']} {row['point_id']} - HTTP {res.status_code}: {res.text}")
+                
+        except requests.RequestException as e:
+            # 發生網路問題（如 Timeout, 連線拒絕）時記錄 error
+            logger.error(f"匯入異常 (ERROR): 無法連線至 API - {row['floor']} {row['point_id']} - {str(e)}")
+
+    logger.info("批次匯入作業結束")
 
 
 if __name__ == "__main__":

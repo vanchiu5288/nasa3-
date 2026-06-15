@@ -1,4 +1,5 @@
 import time
+import logging
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from .models import WifiMeasurement
 from .serializers import WifiMeasurementSerializer
 from .vsz_client import find_wireless_client
 
+logger = logging.getLogger(__name__)
 
 def rssi_to_heat_value(rssi):
     if rssi is None:
@@ -74,6 +76,7 @@ def create_measurement(request):
     metric_type = data.get("metric_type", "rssi")
 
     if x is None or y is None:
+        logger.warning(f"建立測量資料失敗: 缺少座標 x 或 y (資料: {data})")
         return Response(
             {
                 "message": "invalid data",
@@ -89,6 +92,7 @@ def create_measurement(request):
         x = float(x)
         y = float(y)
     except ValueError:
+        logger.warning(f"建立測量資料失敗: 座標格式非數字 (x={x}, y={y})")
         return Response(
             {
                 "message": "invalid data",
@@ -100,6 +104,7 @@ def create_measurement(request):
         )
 
     if not (0 <= x <= 100 and 0 <= y <= 100):
+        logger.warning(f"建立測量資料失敗: 座標超出範圍 (x={x}, y={y})")    
         return Response(
             {
                 "message": "invalid data",
@@ -118,12 +123,9 @@ def create_measurement(request):
     data["y"] = y
     data["metric_type"] = metric_type
 
-    # =========================
-    # Case 1: 手動測速資料
-    # 不需要查 vSZ
-    # =========================
     if metric_type == "speed":
         if data.get("download_mbps") is None:
+            logger.warning("建立測量資料失敗: speed 模式缺少 download_mbps")
             return Response(
                 {
                     "message": "invalid data",
@@ -138,6 +140,7 @@ def create_measurement(request):
 
         if serializer.is_valid():
             serializer.save()
+            logger.info(f"成功建立手動測速資料: 點位 ID [{data['point_id']}], 速度: {data['download_mbps']} Mbps")
             return Response(
                 {
                     "message": "created",
@@ -145,7 +148,7 @@ def create_measurement(request):
                 },
                 status=201,
             )
-
+        logger.warning(f"手動測速資料驗證失敗 (Serializer Errors): {serializer.errors}")
         return Response(
             {
                 "message": "invalid data",
@@ -161,6 +164,7 @@ def create_measurement(request):
     keyword = data.get("keyword") or data.get("hostname")
 
     if not keyword:
+        logger.warning("建立測量資料失敗: RSSI 模式缺少 keyword / hostname")
         return Response(
             {
                 "message": "invalid data",
@@ -174,6 +178,7 @@ def create_measurement(request):
     try:
         client = find_wireless_client(keyword)
     except Exception as e:
+        logger.error(f"查詢 vSZ monitor 失敗 (關鍵字: {keyword}), 錯誤原因: {str(e)}")
         return Response(
             {
                 "message": "vSZ query failed",
@@ -184,6 +189,7 @@ def create_measurement(request):
         )
 
     if client is None:
+        logger.warning(f"vSZ 查無此裝置，拒絕建立測量點 (關鍵字: {keyword})")
         return Response(
             {
                 "ok": False,
@@ -218,6 +224,7 @@ def create_measurement(request):
 
     if serializer.is_valid():
         serializer.save()
+        logger.info(f"成功建立 vSZ 測量資料: 點位 ID [{data['point_id']}], AP: {data['ap_name']}, RSSI: {data['rssi']}")
         return Response(
             {
                 "message": "created",
@@ -225,7 +232,7 @@ def create_measurement(request):
             },
             status=201,
         )
-
+    logger.warning(f"vSZ 測量資料驗證失敗 (Serializer Errors): {serializer.errors}")
     return Response(
         {
             "message": "invalid data",
@@ -415,6 +422,7 @@ def delete_measurement(request, measurement_id):
     try:
         measurement = WifiMeasurement.objects.get(id=measurement_id)
     except WifiMeasurement.DoesNotExist:
+        logger.warning(f"嘗試刪除失敗: 找不到 ID 為 {measurement_id} 的測量紀錄")
         return Response(
             {
                 "message": "not found",
@@ -424,6 +432,7 @@ def delete_measurement(request, measurement_id):
         )
 
     measurement.delete()
+    logger.info(f"成功刪除測量紀錄 (ID: {measurement_id})")
 
     return Response(
         {
@@ -437,6 +446,7 @@ def query_user_connection(request):
     keyword = request.GET.get('keyword', '').strip()
     
     if not keyword:
+        logger.warning("查詢 vSZ 連線失敗: 未提供 keyword")
         return JsonResponse({'error': '請提供查詢關鍵字 (Hostname, MAC 或 IP)'}, status=400)
     
     try:
@@ -444,10 +454,13 @@ def query_user_connection(request):
         client_data = find_wireless_client(keyword)
         
         if client_data:
+            logger.info(f"成功透過 API 查詢 vSZ 設備 (keyword: {keyword})")
             return JsonResponse(client_data)
         else:
+            logger.warning(f"透過 API 查詢 vSZ 查無設備 (keyword: {keyword})")
             return JsonResponse({'error': '找不到符合條件的設備'}, status=404)
             
     except Exception as e:
         print(f"Error querying vSZ: {e}")
+        logger.exception(f"查詢 vSZ 連線時發生未知的嚴重錯誤 (keyword: {keyword})")
         return JsonResponse({'error': '查詢發生錯誤，請檢查後端連線'}, status=500)
