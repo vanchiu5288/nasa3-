@@ -6,39 +6,102 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+
+
+# ============================================================
+# Base paths
+# ============================================================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / ".env.local")
-load_dotenv(BASE_DIR / ".env",override=True)
 
-# SECURITY
-SECRET_KEY = os.getenv(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-kgod#+($w)h3h7o76d!$+1^by9w^gsq7xvwan*%3f-&)!#o@yv",
+# ============================================================
+# Load environment files
+# ============================================================
+# 先讀 .env，再讀 .env.local，讓 .env.local 優先覆蓋。
+# 正式機器上的秘密資料建議放在 .env.local，不要放 GitHub。
+load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR / ".env.local", override=True)
+
+
+# ============================================================
+# Helper functions
+# ============================================================
+
+def env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+
+    if value is None:
+        return default
+
+    return value.strip().lower() in ("1", "true", "yes", "on")
+
+
+def env_list(name: str, default: str = "") -> list[str]:
+    value = os.getenv(name, default)
+
+    return [
+        item.strip()
+        for item in value.split(",")
+        if item.strip()
+    ]
+
+
+def env_int(name: str, default: int) -> int:
+    value = os.getenv(name)
+
+    if value is None or value.strip() == "":
+        return default
+
+    return int(value)
+
+
+# ============================================================
+# App
+# ============================================================
+
+APP_NAME = os.getenv("APP_NAME", "nasa3")
+
+
+# ============================================================
+# Security
+# ============================================================
+
+# 支援兩種名稱：
+# 1. SECRET_KEY
+# 2. DJANGO_SECRET_KEY
+#
+# 建議你的 .env.local 使用 SECRET_KEY。
+SECRET_KEY = (
+    os.getenv("SECRET_KEY")
+    or os.getenv("DJANGO_SECRET_KEY")
+    or "django-insecure-dev-only-change-me"
 )
-#DEBUG = True
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv(
-        "ALLOWED_HOSTS",
-        "apmap.csie.org,localhost,127.0.0.1,0.0.0.0"
-    ).split(",")
-    if host.strip()
-]
+DEBUG = env_bool("DEBUG", False)
 
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv(
-        "CSRF_TRUSTED_ORIGINS",
-        "http://apmap.csie.org,https://apmap.csie.org,http://localhost,http://127.0.0.1"
-    ).split(",")
-    if origin.strip()
-]
+ALLOWED_HOSTS = env_list(
+    "ALLOWED_HOSTS",
+    "apmap.csie.org,localhost,127.0.0.1",
+)
+
+CSRF_TRUSTED_ORIGINS = env_list(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://apmap.csie.org,http://apmap.csie.org,http://localhost:5173,http://127.0.0.1:5173",
+)
+
+# 如果前面有 nginx / reverse proxy，讓 Django 知道原始請求是 HTTPS。
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# 正式環境建議 cookie 只走 HTTPS。
+CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not DEBUG)
+SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", not DEBUG)
 
 
+# ============================================================
 # Application definition
+# ============================================================
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -73,7 +136,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -89,25 +151,29 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = "config.wsgi.application"
 
 
+# ============================================================
 # CORS
-# 開發時可以先全開
-CORS_ALLOW_ALL_ORIGINS = True
+# ============================================================
+# 開發環境 DEBUG=True 時，可以全開。
+# 正式環境 DEBUG=False 時，預設不全開，而是吃 CORS_ALLOWED_ORIGINS。
 
-# 如果你之後想收斂權限，可以改用這個，並把上面的 CORS_ALLOW_ALL_ORIGINS 關掉
-# CORS_ALLOW_ALL_ORIGINS = False
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-#     "http://127.0.0.1:5173",
-#     "http://localhost:3000",
-#     "http://127.0.0.1:3000",
-# ]
+CORS_ALLOW_ALL_ORIGINS = env_bool("CORS_ALLOW_ALL_ORIGINS", DEBUG)
+
+CORS_ALLOWED_ORIGINS = env_list(
+    "CORS_ALLOWED_ORIGINS",
+    "https://apmap.csie.org,http://apmap.csie.org,http://localhost:5173,http://127.0.0.1:5173",
+)
+
+CORS_ALLOW_CREDENTIALS = env_bool("CORS_ALLOW_CREDENTIALS", True)
 
 
+# ============================================================
 # REST Framework
+# ============================================================
+
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
@@ -116,38 +182,66 @@ REST_FRAMEWORK = {
 }
 
 
+# ============================================================
+# Discord webhook
+# ============================================================
+
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
+
+
+# ============================================================
 # vSZ / Ruckus API settings
-# 開發時，如果你用 SSH tunnel：
-# ssh ta221@172.16.215.1 -L 7700:10.3.7.250:8443
-# 那 VSZ_BASE_URL 就用 https://localhost:7700
+# ============================================================
 
-VSZ_BASE_URL = os.environ.get("VSZ_BASE_URL", "https://127.0.0.1:7700")
+VSZ_BASE_URL = os.getenv("VSZ_BASE_URL", "https://127.0.0.1:7700")
 
-# 你的 tunnel 如果是自簽憑證，verify 要 False。
-# .env 裡 VSZ_INSECURE_TLS=1 時，這裡會變成 False。
-VSZ_VERIFY_SSL = os.environ.get("VSZ_INSECURE_TLS", "1") != "1"
+# .env.local 裡 VSZ_INSECURE_TLS=1 時，代表不要驗證 SSL。
+VSZ_INSECURE_TLS = env_bool("VSZ_INSECURE_TLS", True)
+VSZ_VERIFY_SSL = not VSZ_INSECURE_TLS
 
-# 自動登入用
-VSZ_USERNAME = os.environ.get("VSZ_USERNAME", "")
-VSZ_PASSWORD = os.environ.get("VSZ_PASSWORD", "")
+VSZ_USERNAME = os.getenv("VSZ_USERNAME", "")
+VSZ_PASSWORD = os.getenv("VSZ_PASSWORD", "")
 
-# 登入 API path。
-# 如果 DevTools 看到是 v11_0，就改 .env 的 VSZ_LOGIN_PATH。
-VSZ_LOGIN_PATH = os.environ.get(
+VSZ_LOGIN_PATH = os.getenv(
     "VSZ_LOGIN_PATH",
-    "/wsg/api/public/v11_1/session",
+    "/cas/login?service=%2Fwsg%2Flogin%2Fcas",
 )
 
-# 手動 cookie fallback，用不到也可以留著
-VSZ_COOKIE = os.environ.get("VSZ_COOKIE", "")
-VSZ_CSRF_TOKEN = os.environ.get("VSZ_CSRF_TOKEN", "")
-VSZ_COOKIE_FILE = os.environ.get(
+# 手動 cookie fallback，用不到也可以留著。
+VSZ_COOKIE = os.getenv("VSZ_COOKIE", "")
+VSZ_CSRF_TOKEN = os.getenv("VSZ_CSRF_TOKEN", "")
+
+VSZ_COOKIE_FILE = os.getenv(
     "VSZ_COOKIE_FILE",
-    "/home/wifi1/nasa3-/backend/cookies.txt",
+    str(BASE_DIR / "cookies.txt"),
 )
 
 
+# ============================================================
+# Backend bind settings
+# ============================================================
+
+BACKEND_HOST = os.getenv("BACKEND_HOST", "127.0.0.1")
+BACKEND_PORT = env_int("BACKEND_PORT", 8000)
+
+
+# ============================================================
+# LDAP
+# ============================================================
+
+LDAP_SERVER = os.getenv("LDAP_SERVER", "")
+LDAP_PORT = env_int("LDAP_PORT", 636)
+LDAP_BASE_DN = os.getenv("LDAP_BASE_DN", "")
+LDAP_CA_CERT_PATH = os.getenv(
+    "LDAP_CA_CERT_PATH",
+    str(BASE_DIR / "nasaldap_ca.crt"),
+)
+
+
+# ============================================================
 # Database
+# ============================================================
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -156,7 +250,10 @@ DATABASES = {
 }
 
 
+# ============================================================
 # Password validation
+# ============================================================
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -172,7 +269,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+# ============================================================
 # Internationalization
+# ============================================================
+
 LANGUAGE_CODE = "zh-hant"
 
 TIME_ZONE = "Asia/Taipei"
@@ -182,10 +283,18 @@ USE_I18N = True
 USE_TZ = True
 
 
+# ============================================================
 # Static files
-STATIC_URL = "static/"
+# ============================================================
+
+STATIC_URL = "/static/"
+
+# collectstatic 會收集到這裡。
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-# Django 6.0 建議明確設定
+# ============================================================
+# Default primary key field type
+# ============================================================
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
